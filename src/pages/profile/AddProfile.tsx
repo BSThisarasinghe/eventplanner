@@ -1,19 +1,61 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { FIREBASE_AUTH, FIREBASE_STORE } from "../../firebase/firebase-config";
+import { addDoc, collection } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Button, Input } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { AddProfileDetails } from "./components/AddProfileDetails";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AddProfile = () => {
-    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const [mobile, setMobile] = useState<string>('');
+    const [address, setAddress] = useState<string>('');
 
-    const handleLogin = () => {
+    const getUser = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('user');
+            return jsonValue != null ? JSON.parse(jsonValue) : null;
+        } catch (e) {
+            // error reading value
+        }
+    };
+
+    useEffect(() => {
+        const userStore = getUser();
+        console.log(userStore);
+    }, []);
+
+    const onSubmitProfile = async () => {
         // Implement your authentication logic here
         // console.log('Username:', username);
         // console.log('Password:', password);
+        const userStore = await getUser();
+        const user = userStore.user;
+        const uid = user.uid;
+        try {
+            // await firestore().collection('users').doc(uid).set({
+            //     name: 'name',
+            //     profilePictureUrl: 'profilePictureUrl',
+            // });
+            // Profile data successfully stored.
+            const doc = addDoc(collection(FIREBASE_STORE, 'profile'), {
+                uid: uid,
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                mobile: mobile,
+                address: address
+            });
+            console.log("####", doc);
+            
+        } catch (error) {
+            // Handle errors here.
+        }
     };
 
     const onPressUpload = async () => {
@@ -71,6 +113,16 @@ const AddProfile = () => {
                 onPressUpload={onPressUpload}
             /> */}
             <AddProfileDetails
+                firstName={firstName}
+                lastName={lastName}
+                email={email}
+                mobile={mobile}
+                address={address}
+                setFirstName={setFirstName}
+                setLastName={setLastName}
+                setEmail={setEmail}
+                setMobile={setMobile}
+                setAddress={setAddress}
             />
             <View>
                 <Button
@@ -83,6 +135,7 @@ const AddProfile = () => {
                 <Button
                     buttonText={'Next'}
                     rightIcon={'arrow-right'}
+                    onPress={onSubmitProfile}
                 />
             </View>
             {/* <Image source={{ uri: 'file:///data/user/0/com.eventplanner/cache/rn_image_picker_lib_temp_8293857d-2053-425b-802d-adc57f52bca9.jpg' }} style={{ width: 200, height: 200 }} /> */}

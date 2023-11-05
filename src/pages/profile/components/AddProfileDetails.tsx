@@ -2,17 +2,31 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Input } from "../../../components";
 
+type Props = {
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobile: string;
+    address: string;
+    setFirstName: (firstName: string) => void;
+    setLastName: (lastName: string) => void;
+    setEmail: (email: string) => void;
+    setMobile: (mobile: string) => void;
+    setAddress: (address: string) => void;
+}
 
-const AddProfileDetails = () => {
-    const [showPassword, setShowPassword] = useState<boolean>(false);
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-
-    const handleLogin = () => {
-        // Implement your authentication logic here
-        // console.log('Username:', username);
-        // console.log('Password:', password);
-    };
+const AddProfileDetails = ({
+    firstName,
+    lastName,
+    email,
+    mobile,
+    address,
+    setFirstName,
+    setLastName,
+    setEmail,
+    setMobile,
+    setAddress,
+}: Props) => {
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -23,8 +37,8 @@ const AddProfileDetails = () => {
             <View style={{ flex: 1 }}>
                 <Input
                     label={"First Name"}
-                    value={email}
-                    onChangeText={(value: string) => setEmail(value)}
+                    value={firstName}
+                    onChangeText={(value: string) => setFirstName(value)}
                     placeholder={"e.g: name@example.com"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'envelope'}
@@ -32,46 +46,46 @@ const AddProfileDetails = () => {
                 />
                 <Input
                     label={"Last Name"}
-                    value={password}
-                    onChangeText={(value: string) => setPassword(value)}
+                    value={lastName}
+                    onChangeText={(value: string) => setLastName(value)}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
+                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                 />
                 <Input
                     label={"Email"}
-                    value={password}
-                    onChangeText={(value: string) => setPassword(value)}
+                    value={email}
+                    onChangeText={(value: string) => setEmail(value)}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
+                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                 />
                 <Input
                     label={"Phone number"}
-                    value={password}
-                    onChangeText={(value: string) => setPassword(value)}
+                    value={mobile}
+                    onChangeText={(value: string) => setMobile(value)}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
+                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                 />
                 <Input
                     label={"Mailing address"}
-                    value={password}
-                    onChangeText={(value: string) => setPassword(value)}
+                    value={address}
+                    onChangeText={(value: string) => setAddress(value)}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
+                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                 />
             </View>

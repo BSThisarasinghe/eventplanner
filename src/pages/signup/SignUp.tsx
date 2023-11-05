@@ -24,6 +24,7 @@ const SignUp = ({ navigation }: Props) => {
         try {
             const response = await createUserWithEmailAndPassword(auth, email, password);
             console.log("response 1", response);
+            navigation.navigate('add-profile')
 
         } catch (error) {
             console.log("reposne 1 error", error);

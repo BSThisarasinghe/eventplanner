@@ -24,6 +24,7 @@ const Login = ({ navigation }: Props) => {
         try {
             const response = await signInWithEmailAndPassword(auth, email, password);
             console.log("response 2", response);
+            navigation.navigate('add-profile')
 
         } catch (error) {
             console.log("reposne 2 error", error);

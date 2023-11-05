@@ -47,10 +47,10 @@ export default function RouteHandler() {
                 },
             })}
         >
-            <Stack.Screen name="bottomtab" component={BottomTab} />
             <Stack.Screen name="login" component={Login} options={{ headerShown: false }} />
             <Stack.Screen name="signup" component={SignUp} options={{ headerShown: false }} />
             <Stack.Screen name="add-profile" component={AddProfile} options={{ headerShown: false }} />
+            <Stack.Screen name="bottomtab" component={BottomTab} />
         </Stack.Navigator>
     );
 }
