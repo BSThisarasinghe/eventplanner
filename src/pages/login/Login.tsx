@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import SimpleReactValidator from 'simple-react-validator';
 import { Button, Input } from "../../components";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { FIREBASE_AUTH } from "../../firebase/firebase-config";
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setSignIn } from "../../store/actions";
+import { useDispatch } from "react-redux";
 
 type Props = {
     navigation: any
@@ -14,18 +17,29 @@ const Login = ({ navigation }: Props) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [auth, setAuth] = useState<any>(FIREBASE_AUTH);
-    
+    const [validator] = useState(new SimpleReactValidator())
+    const dispatch = useDispatch();
+    const useForceUpdate = () => {
+        const [value, setValue] = useState(0);
+        return () => setValue(value => value + 1);
+    }
+
+    const forceUpdate = useForceUpdate()
+
     const handleSignUp = () => {
         navigation.navigate('signup')
     };
 
-    const onLogin = async() => {
+    const onLogin = async () => {
         try {
-            const response = await signInWithEmailAndPassword(auth, email, password);
-            console.log("response 2", response);
-            navigation.navigate('add-profile')
-
+            // const response = await signInWithEmailAndPassword(auth, email, password);
+            // console.log("response 2", response);
+            if (validator.allValid()) {
+                dispatch(setSignIn(email, password, navigation))
+            } else {
+                validator.showMessages();
+                forceUpdate()
+            }
         } catch (error) {
             console.log("reposne 2 error", error);
         }
@@ -41,23 +55,31 @@ const Login = ({ navigation }: Props) => {
                 <Input
                     label={"Email"}
                     value={email}
-                    onChangeText={(value: string) => setEmail(value)}
+                    onChangeText={(value: string) => {
+                        forceUpdate();
+                        setEmail(value)
+                    }}
                     placeholder={"e.g: name@example.com"}
                     placeholderTextColor={"#d8d8d8"}
                     leftIcon={'envelope'}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('email', email, 'required|email')}
                 />
                 <Input
                     label={"Password"}
                     value={password}
                     secureTextEntry={!showPassword}
-                    onChangeText={(value: string) => setPassword(value)}
+                    onChangeText={(value: string) => {
+                        forceUpdate()
+                        setPassword(value)
+                    }}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     leftIcon={'lock'}
                     rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('password', password, 'required')}
                 />
                 <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
                     <Button

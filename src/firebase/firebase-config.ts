@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
+import auth from '@react-native-firebase/auth';
 // import database from '@react-native-firebase/database';
 
 // import { getAnalytics } from "firebase/analytics";
@@ -21,7 +22,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-export const FIREBASE_APP = initializeApp(firebaseConfig);
-export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
-export const FIREBASE_STORE = getFirestore(FIREBASE_APP);
+// export const FIREBASE_APP = initializeApp(firebaseConfig);
+export const AUTH = auth;
+
+// export const FIREBASE_AUTH = getAuth(FIREBASE_APP);
+// export const FIREBASE_STORE = getFirestore(FIREBASE_APP);
 // const analytics = getAnalytics(app);

@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import orderStore from './order.reducer';
+import authStore from './auth.reducer';
 
 export default combineReducers({
-  order: orderStore.reducer
+  auth: authStore.reducer
 });

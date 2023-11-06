@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Input } from "../../components";
-import { FIREBASE_AUTH } from "../../firebase/firebase-config";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+// import { FIREBASE_AUTH } from "../../firebase/firebase-config";
+import auth from '@react-native-firebase/auth';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
     navigation: any
@@ -14,7 +15,7 @@ const SignUp = ({ navigation }: Props) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [cnfPassword, setCnfPassword] = useState<string>('');
-    const [auth, setAuth] = useState<any>(FIREBASE_AUTH);
+    // const [auth, setAuth] = useState<any>(FIREBASE_AUTH);
 
     const handleLogin = () => {
         navigation.navigate('add-profile')
@@ -22,9 +23,27 @@ const SignUp = ({ navigation }: Props) => {
 
     const onSignUp = async () => {
         try {
-            const response = await createUserWithEmailAndPassword(auth, email, password);
-            console.log("response 1", response);
-            navigation.navigate('add-profile')
+            auth()
+            .createUserWithEmailAndPassword(email, password)
+            .then(async(user: any) => {
+                const { currentUser } = auth();
+                console.log("current User", JSON.stringify(currentUser));
+
+                await AsyncStorage.setItem('user', JSON.stringify(currentUser));
+              navigation.navigate('add-profile')
+            })
+            .catch((error: any) => {
+              if (error.code === 'auth/email-already-in-use') {
+                console.log('That email address is already in use!');
+              }
+          
+              if (error.code === 'auth/invalid-email') {
+                console.log('That email address is invalid!');
+              }
+          
+              console.error(error);
+            });
+            
 
         } catch (error) {
             console.log("reposne 1 error", error);

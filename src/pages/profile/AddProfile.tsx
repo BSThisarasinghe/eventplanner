@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { FIREBASE_AUTH, FIREBASE_STORE } from "../../firebase/firebase-config";
+// import { FIREBASE_AUTH, FIREBASE_STORE } from "../../firebase/firebase-config";
 import { addDoc, collection } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Button, Input } from "../../components";
@@ -8,6 +8,8 @@ import { UploadHandler } from "./components/UploadHandler";
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { AddProfileDetails } from "./components/AddProfileDetails";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
 
 const AddProfile = () => {
     const [firstName, setFirstName] = useState<string>('');
@@ -27,7 +29,7 @@ const AddProfile = () => {
 
     useEffect(() => {
         const userStore = getUser();
-        console.log(userStore);
+        console.log("userStore", userStore);
     }, []);
 
     const onSubmitProfile = async () => {
@@ -35,24 +37,32 @@ const AddProfile = () => {
         // console.log('Username:', username);
         // console.log('Password:', password);
         const userStore = await getUser();
-        const user = userStore.user;
-        const uid = user.uid;
+        const uid = userStore.uid;
         try {
             // await firestore().collection('users').doc(uid).set({
             //     name: 'name',
             //     profilePictureUrl: 'profilePictureUrl',
             // });
             // Profile data successfully stored.
-            const doc = addDoc(collection(FIREBASE_STORE, 'profile'), {
-                uid: uid,
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                mobile: mobile,
-                address: address
-            });
-            console.log("####", doc);
-            
+            // const doc = addDoc(collection(FIREBASE_STORE, 'profile'), {
+            //     uid: uid,
+            //     firstName: firstName,
+            //     lastName: lastName,
+            //     email: email,
+            //     mobile: mobile,
+            //     address: address
+            // });
+            // console.log("####", doc);
+            database().ref(`users/${uid}/personalinfo`)
+                .push({
+                    uid: uid,
+                    firstName: firstName,
+                    lastName: lastName,
+                    email: email,
+                    mobile: mobile,
+                    address: address
+                });
+
         } catch (error) {
             // Handle errors here.
         }
