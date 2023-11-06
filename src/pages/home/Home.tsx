@@ -10,6 +10,8 @@ import Icon from 'react-native-vector-icons/Feather';
 import { User } from './models/users.model';
 import { EventItem } from './models/event-list-response.model';
 import Toast from 'react-native-toast-message';
+import { UserItem } from './components/UserItem';
+import { ImageItem } from './components/ImageItem';
 
 export default function Home({ navigation }: any) {
     const flatListRef = useRef<FlatList<DataItem>>(null);
@@ -48,40 +50,17 @@ export default function Home({ navigation }: any) {
 
     const renderItem = ({ item }: { item: User }) => {
         return (
-            <View style={{ height: 60, padding: 4, flexDirection: 'row', marginBottom: 5, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: '#d8d8d8' }}>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Image
-                        source={{ uri: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' }}
-                        style={{ width: 50, height: 50, borderRadius: 30 }}
-                    />
-                </View>
-                <View style={{ flex: 4, paddingLeft: 8 }}>
-                    <Text style={{ color: '#000' }}>{item.name}</Text>
-                    <Text>{item.email}</Text>
-                </View>
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <Icon name={'message-square'} size={20} color={"#000"} />
-                </View>
-            </View>
+            <UserItem
+                item={item}
+            />
         )
     };
 
     const renderImageItem = ({ item }: { item: EventItem }) => {
         return (
-            <View style={{ flexDirection: 'column', width: 300, borderWidth: 1, borderColor: '#d8d8d8' }}>
-                <Image
-                    source={{ uri: item.thumbnailUrl }}
-                    style={{ height: 200, marginBottom: 20 }}
-                />
-                <View style={{ padding: 10 }}>
-                    <Text style={{ color: '#000', fontWeight: '700', fontSize: 16 }}>
-                        {item.title}
-                    </Text>
-                    <Text style={{ fontWeight: '300' }}>
-                        Link: {item.url}
-                    </Text>
-                </View>
-            </View>
+            <ImageItem
+                item={item}
+            />
         )
     };
 
