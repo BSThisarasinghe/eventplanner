@@ -4,8 +4,9 @@ import { Button, Input, Spinner } from "../../components";
 import SimpleReactValidator from 'simple-react-validator';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../store/actions";
+import Toast from "react-native-toast-message";
 
 type Props = {
     navigation: any
@@ -18,9 +19,12 @@ const SignUp = ({ navigation }: Props) => {
     const [password, setPassword] = useState<string>('');
     const [cnfPassword, setCnfPassword] = useState<string>('');
     const [pwdError, setPwdError] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
 
     const [validator] = useState(new SimpleReactValidator());
+
+    const {
+        signUpLoading
+    } = useSelector<any, any>(({ auth }) => auth);
 
     const dispatch = useDispatch();
 
@@ -39,27 +43,24 @@ const SignUp = ({ navigation }: Props) => {
 
     const onSignUp = async () => {
         try {
-            setLoading(true);
             if (validator.allValid()) {
                 if (password == cnfPassword) {
                     dispatch(setSignUp(email, password, navigation))
                 } else {
-                    setLoading(false);
                     setPwdError('Passwords do not match')
                 }
             } else {
-                setLoading(false);
                 validator.showMessages();
                 forceUpdate()
             }
         } catch (error) {
-            setLoading(false);
             console.log("reposne 1 error", error);
         }
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
+            <Toast />
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>
@@ -102,7 +103,7 @@ const SignUp = ({ navigation }: Props) => {
                 errorText={validator.message('confirm password', password, 'required')}
             />
             {/* </View> */}
-            {!loading ? <Button
+            {!signUpLoading ? <Button
                 buttonText={'Sign Up'}
                 rightIcon={'arrow-right'}
                 onPress={onSignUp}

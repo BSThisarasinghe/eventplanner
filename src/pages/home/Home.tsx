@@ -9,6 +9,7 @@ import { fetchEventImages, fetchPosts, fetchUsers, userFetch } from '../../store
 import Icon from 'react-native-vector-icons/Feather';
 import { User } from './models/users.model';
 import { EventItem } from './models/event-list-response.model';
+import Toast from 'react-native-toast-message';
 
 export default function Home({ navigation }: any) {
     const flatListRef = useRef<FlatList<DataItem>>(null);

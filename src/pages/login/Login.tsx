@@ -6,7 +6,8 @@ import { Button, Input, Spinner } from "../../components";
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setSignIn } from "../../store/actions";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import Toast from "react-native-toast-message";
 
 type Props = {
     navigation: any
@@ -16,11 +17,14 @@ const Login = ({ navigation }: Props) => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
 
     const [password, setPassword] = useState<string>('');
     const [validator] = useState(new SimpleReactValidator())
     const dispatch = useDispatch();
+
+    const {
+        loginLoading
+    } = useSelector<any, any>(({ auth }) => auth);
 
     const useForceUpdate = () => {
         const [value, setValue] = useState(0);
@@ -35,24 +39,27 @@ const Login = ({ navigation }: Props) => {
 
     const onLogin = async () => {
         try {
-            setLoading(true);
             // const response = await signInWithEmailAndPassword(auth, email, password);
-            // console.log("response 2", response);
+            // console.log("response 3333333332");
             if (validator.allValid()) {
                 dispatch(setSignIn(email, password, navigation))
             } else {
-                setLoading(false);
                 validator.showMessages();
                 forceUpdate()
             }
         } catch (error) {
-            setLoading(false);
-            console.log("reposne 2 error", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Something went wrong!'
+            });
+            // console.log("reposne 2 error", error);
         }
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
+            <Toast />
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>
@@ -97,11 +104,11 @@ const Login = ({ navigation }: Props) => {
                 />
             </View>
             {/* </View> */}
-            {!loading ? <Button
+            {!loginLoading ? <Button
                 buttonText={'Login'}
                 rightIcon={'arrow-right'}
                 onPress={onLogin}
-            /> : <Spinner/>}
+            /> : <Spinner />}
             <Button
                 buttonText={'Sign Up'}
                 rightIcon={'arrow-right'}

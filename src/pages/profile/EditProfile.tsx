@@ -10,6 +10,7 @@ import { userFetch } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFetchBlob from "rn-fetch-blob";
+import Toast from "react-native-toast-message";
 
 const EditProfile = () => {
     const [mode, setMode] = useState<string>('display');
@@ -159,12 +160,18 @@ const EditProfile = () => {
             })
             .catch((error) => {
                 setLoading(false);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Something went wrong!'
+                });
                 console.error('Error updating data: ', error);
             });
     }
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
+            <Toast />
             {!userDetailsLoading ? <>
                 <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                     <Button

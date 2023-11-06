@@ -4,6 +4,8 @@ interface AuthModel {
   authDetails: any;
   userDetails: any;
   userDetailsLoading: boolean;
+  loginLoading: boolean;
+  signUpLoading: boolean;
 }
 
 const authStore = createSlice({
@@ -11,19 +13,47 @@ const authStore = createSlice({
   initialState: {
     authDetails: null,
     userDetails: null,
-    userDetailsLoading: false
+    userDetailsLoading: false,
+    loginLoading: false,
+    signUpLoading: false
   } as AuthModel,
   reducers: {
+    loginLoading: (state: AuthModel) => {
+      return {
+        ...state,
+        loginLoading: true
+      }
+    },
     loginSuccess: (state: AuthModel, action: PayloadAction<any>) => {
       return {
         ...state,
-        authDetails: action.payload
+        authDetails: action.payload,
+        loginLoading: false
       }
     },
     loginFail: (state: AuthModel) => {
       return {
         ...state,
-        authDetails: null
+        authDetails: null,
+        loginLoading: false
+      }
+    },
+    signUpLoading: (state: AuthModel) => {
+      return {
+        ...state,
+        signUpLoading: true
+      }
+    },
+    signUpSuccess: (state: AuthModel) => {
+      return {
+        ...state,
+        signUpLoading: false
+      }
+    },
+    signUpFail: (state: AuthModel) => {
+      return {
+        ...state,
+        signUpLoading: false
       }
     },
     userFetchLoading: (state: AuthModel) => {
