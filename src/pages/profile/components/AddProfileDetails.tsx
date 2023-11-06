@@ -37,7 +37,7 @@ const AddProfileDetails = ({
 }: Props) => {
 
     return (
-        <ScrollView contentContainerStyle={styles.container} scrollEnabled={scrollEnable}>
+        <ScrollView contentContainerStyle={styles.container} scrollEnabled={scrollEnable} keyboardShouldPersistTaps={'always'}>
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>

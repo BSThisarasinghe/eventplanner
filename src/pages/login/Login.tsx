@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SimpleReactValidator from 'simple-react-validator';
 import { Button, Input } from "../../components";
@@ -19,7 +19,7 @@ const Login = ({ navigation }: Props) => {
     const [password, setPassword] = useState<string>('');
     const [validator] = useState(new SimpleReactValidator())
     const dispatch = useDispatch();
-    
+
     const useForceUpdate = () => {
         const [value, setValue] = useState(0);
         return () => setValue(value => value + 1);
@@ -47,51 +47,51 @@ const Login = ({ navigation }: Props) => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>
             </View>
-            <View style={{ flex: 1 }}>
-                <Input
-                    label={"Email"}
-                    value={email}
-                    onChangeText={(value: string) => {
-                        forceUpdate();
-                        setEmail(value)
-                    }}
-                    placeholder={"e.g: name@example.com"}
-                    placeholderTextColor={"#d8d8d8"}
-                    leftIcon={'envelope'}
-                    inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('email', email, 'required|email')}
+            {/* <View style={{ flex: 1 }}> */}
+            <Input
+                label={"Email"}
+                value={email}
+                onChangeText={(value: string) => {
+                    forceUpdate();
+                    setEmail(value)
+                }}
+                placeholder={"e.g: name@example.com"}
+                placeholderTextColor={"#d8d8d8"}
+                leftIcon={'envelope'}
+                inputStyle={{ marginBottom: 0 }}
+                errorText={validator.message('email', email, 'required|email')}
+            />
+            <Input
+                label={"Password"}
+                value={password}
+                secureTextEntry={!showPassword}
+                onChangeText={(value: string) => {
+                    forceUpdate()
+                    setPassword(value)
+                }}
+                placeholder={"*********"}
+                placeholderTextColor={"#d8d8d8"}
+                leftIcon={'lock'}
+                rightIcon={showPassword ? 'eye' : 'eye-slash'}
+                onPressRightIcon={() => setShowPassword(!showPassword)}
+                inputStyle={{ marginBottom: 50 }}
+                errorText={validator.message('password', password, 'required')}
+            />
+            <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+                <Button
+                    buttonText={'Restore passowrd'}
+                    rightIcon={'arrow-up-right'}
+                    rightColor={'#da5e42'}
+                    buttonStyle={{ backgroundColor: 'transparent', paddingVertical: 0, paddingHorizontal: 0 }}
+                    buttonTextStyle={{ color: '#da5e42' }}
                 />
-                <Input
-                    label={"Password"}
-                    value={password}
-                    secureTextEntry={!showPassword}
-                    onChangeText={(value: string) => {
-                        forceUpdate()
-                        setPassword(value)
-                    }}
-                    placeholder={"*********"}
-                    placeholderTextColor={"#d8d8d8"}
-                    leftIcon={'lock'}
-                    rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
-                    inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('password', password, 'required')}
-                />
-                <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-                    <Button
-                        buttonText={'Restore passowrd'}
-                        rightIcon={'arrow-up-right'}
-                        color={'#da5e42'}
-                        buttonStyle={{ backgroundColor: 'transparent', paddingVertical: 0, paddingHorizontal: 0 }}
-                        buttonTextStyle={{ color: '#da5e42' }}
-                    />
-                </View>
             </View>
+            {/* </View> */}
             <Button
                 buttonText={'Login'}
                 rightIcon={'arrow-right'}
@@ -102,7 +102,7 @@ const Login = ({ navigation }: Props) => {
                 rightIcon={'arrow-right'}
                 onPress={handleSignUp}
             />
-        </View>
+        </ScrollView>
     )
 }
 

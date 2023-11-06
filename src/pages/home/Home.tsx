@@ -30,7 +30,9 @@ export default function Home({ navigation }: any) {
     }, []);
 
     useEffect(() => {
-        const thumbnailUrls = eventDetails.slice(0, 10).filter((item: any) => item && item.thumbnailUrl).map((item: any) => item.thumbnailUrl);
+        const thumbnailUrls = eventDetails.slice(0, 10).filter((item: any) => item && item.thumbnailUrl).map((item: any) => ({
+            url: item.thumbnailUrl
+        }));
         setImageList(thumbnailUrls);
     }, []);
 
@@ -76,6 +78,9 @@ export default function Home({ navigation }: any) {
     const onViewPosts = () => {
         navigation.navigate('post-list')
     }
+
+    console.log("imageList", imageList);
+
 
     return (
         <ScrollView style={styles.container}>

@@ -39,7 +39,7 @@ const UploadHandler = ({ onPressUpload, file }: Props) => {
           imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
           rightColor={'#da5e42'}
           onPress={onPressUpload}
-          // backgroundImage={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPySiXUBA5RwgJGrse29qL9oYVME7ZBsXUwpLhY1X&s' }}
+          backgroundImage={{ uri: 'data:image/png;base64,' + file }}
         />
       </View>
     </View>

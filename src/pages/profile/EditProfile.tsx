@@ -9,6 +9,7 @@ import SimpleReactValidator from "simple-react-validator";
 import { userFetch } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import RNFetchBlob from "rn-fetch-blob";
 
 const EditProfile = () => {
     const [mode, setMode] = useState<string>('display');
@@ -33,52 +34,76 @@ const EditProfile = () => {
         return () => setValue(value => value + 1);
     }
 
+    const convertImageToBase64 = (imageUri: (string | null)) => {
+        return new Promise((resolve, reject) => {
+            RNFetchBlob.fs.readFile(imageUri!, 'base64')
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    };
+
     const forceUpdate = useForceUpdate()
     const onPressUpload = async () => {
-
-        const options: any = {
-            saveToPhotos: true,
-            mediaType: "photo",
-            includeBase64: false
-        }
-        let result;
-        try {
-            const cameraGranted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.CAMERA,
-                {
-                    title: "App Camera Permission",
-                    message: "App needs access to your camera ",
-                    buttonNeutral: "Ask Me Later",
-                    buttonNegative: "Cancel",
-                    buttonPositive: "OK"
-                }
-            );
-            const readGranted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-                {
-                    title: 'Gallery Permission',
-                    message: 'App needs access to your gallery.',
-                    buttonPositive: 'OK',
-                }
-            );
-            const writeGranted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                {
-                    title: 'Gallery Permission',
-                    message: 'App needs access to your gallery.',
-                    buttonPositive: 'OK',
-                }
-            );
-            if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log("Camera permission given");
-                result = await launchCamera(options);
-            } else {
-                console.log("Camera permission denied");
+        if (mode === 'edit') {
+            const options: any = {
+                saveToPhotos: true,
+                mediaType: "photo",
+                includeBase64: false
             }
-        } catch (err) {
-            console.log("err", err);
+            let result;
+            try {
+                const cameraGranted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.CAMERA,
+                    {
+                        title: "App Camera Permission",
+                        message: "App needs access to your camera ",
+                        buttonNeutral: "Ask Me Later",
+                        buttonNegative: "Cancel",
+                        buttonPositive: "OK"
+                    }
+                );
+                const readGranted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                    {
+                        title: 'Gallery Permission',
+                        message: 'App needs access to your gallery.',
+                        buttonPositive: 'OK',
+                    }
+                );
+                const writeGranted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: 'Gallery Permission',
+                        message: 'App needs access to your gallery.',
+                        buttonPositive: 'OK',
+                    }
+                );
+                if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+                    console.log("Camera permission given");
+                    result = await launchCamera(options);
+                    let imageUri: (string | null | undefined) = null;
+                    if (result && result.assets && result.assets.length > 0) {
+                        imageUri = result.assets[0].uri;
+                    }
+                    convertImageToBase64(imageUri!)
+                        .then((base64Data) => {
+                            console.log('Base64 data:', base64Data);
+                            setFile(base64Data);
+                        })
+                        .catch((error) => {
+                            console.error('Error converting image to base64:', error);
+                        });
+                } else {
+                    console.log("Camera permission denied");
+                }
+            } catch (err) {
+                console.log("err", err);
+            }
         }
-
     }
 
     useEffect(() => {
@@ -93,7 +118,7 @@ const EditProfile = () => {
                 setEmail(userData.email);
                 setAddress(userData.address);
                 setMobile(userData.mobile);
-                setFile(userData.file);
+                setFile(userData.profilePic);
 
                 console.log("First Name:", firstName);
                 console.log("UID:", uid);
@@ -123,14 +148,16 @@ const EditProfile = () => {
             lastName: lastName,
             email: email,
             mobile: mobile,
-            address: address
-          })
-          .then(() => {
-            console.log('Data updated successfully');
-          })
-          .catch((error) => {
-            console.error('Error updating data: ', error);
-          });
+            address: address,
+            profilePic: file
+        })
+            .then(() => {
+                console.log('Data updated successfully');
+                setMode('display')
+            })
+            .catch((error) => {
+                console.error('Error updating data: ', error);
+            });
     }
 
     return (
@@ -138,12 +165,12 @@ const EditProfile = () => {
             <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <Button
                     buttonText={''}
-                    rightIcon={'camera'}
+                    rightIcon={mode == 'edit' ? 'camera' : ''}
                     buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}
                     imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
                     rightColor={'#da5e42'}
                     onPress={onPressUpload}
-                    backgroundImage={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPySiXUBA5RwgJGrse29qL9oYVME7ZBsXUwpLhY1X&s' }}
+                    backgroundImage={{ uri: 'data:image/png;base64,' + file }}
                 />
             </View>
             <AddProfileDetails

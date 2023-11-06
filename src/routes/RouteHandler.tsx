@@ -157,16 +157,16 @@ export default function RouteHandler() {
     return (
         <Stack.Navigator
             initialRouteName="splash"
-            screenOptions={({ navigation }) => ({
-                header: () => {
-                    return <Header navigation={navigation} />;
-                },
-            })}
+            // screenOptions={({ navigation }) => ({
+            //     header: () => {
+            //         return <Header navigation={navigation} />;
+            //     },
+            // })}
         >
             {(user != 'null' && user !== null) ? <>
-                {/* <Stack.Screen name="bottomtab" component={DrawerTab} options={{ headerShown: false }}  /> */}
+                <Stack.Screen name="drawertab" component={DrawerTab} options={{ headerShown: false }}  />
                 <Stack.Screen name="add-profile" component={AddProfile} options={{ headerShown: false }} />
-                <Stack.Screen name="post-list" component={PostList} />
+                <Stack.Screen name="post-list" component={PostList} options={{ headerTitle: 'Posts & Comments' }} />
             </> : <>
                 <Stack.Screen name="login" component={Login} options={{ headerShown: false }} />
                 <Stack.Screen name="signup" component={SignUp} options={{ headerShown: false }} />

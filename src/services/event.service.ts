@@ -1,30 +1,31 @@
 import axios from 'axios';
+import { API_URL } from '../../constants.config';
 
 const getEventImages = () => {
     return axios({
         method: `get`,
-        url: `https://jsonplaceholder.typicode.com/photos`,
+        url: `${API_URL}/photos`,
     });
 };
 
 const getUsers = () => {
     return axios({
         method: `get`,
-        url: `https://jsonplaceholder.typicode.com/users`,
+        url: `${API_URL}/users`,
     });
 };
 
 const getPosts = () => {
     return axios({
         method: `get`,
-        url: `https://jsonplaceholder.typicode.com/posts`,
+        url: `${API_URL}/posts`,
     });
 };
 
 const getComments = () => {
     return axios({
         method: `get`,
-        url: `https://jsonplaceholder.typicode.com/comments`,
+        url: `${API_URL}/comments`,
     });
 };
 

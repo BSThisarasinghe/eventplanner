@@ -3,10 +3,12 @@ import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacit
 // import { FIREBASE_AUTH, FIREBASE_STORE } from "../../firebase/firebase-config";
 import { addDoc, collection } from 'firebase/firestore';
 import SimpleReactValidator from 'simple-react-validator';
+import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Button, Input } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { AddProfileDetails } from "./components/AddProfileDetails";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import auth from '@react-native-firebase/auth';
@@ -26,7 +28,7 @@ const AddProfile = ({ navigation }: Props) => {
     const [email, setEmail] = useState<string>('');
     const [mobile, setMobile] = useState<string>('');
     const [address, setAddress] = useState<string>('');
-    const [file, setFile] = useState<any>(null);
+    const [file, setFile] = useState<any>('');
     const [validator] = useState(new SimpleReactValidator());
 
     const dispatch = useDispatch();
@@ -51,6 +53,18 @@ const AddProfile = ({ navigation }: Props) => {
         }
     };
 
+    const convertImageToBase64 = (imageUri: (string | null)) => {
+        return new Promise((resolve, reject) => {
+            RNFetchBlob.fs.readFile(imageUri!, 'base64')
+                .then((data) => {
+                    resolve(data);
+                })
+                .catch((error) => {
+                    reject(error);
+                });
+        });
+    };
+
     useEffect(() => {
         dispatch(userFetch());
     }, []);
@@ -61,10 +75,9 @@ const AddProfile = ({ navigation }: Props) => {
     }, []);
 
     useEffect(() => {
-        console.log("##############################", JSON.stringify(userDetails));
-        
+
         if (userDetails) {
-            navigation.navigate('bottomtab')
+            navigation.navigate('drawertab')
         } else {
             navigation.navigate('add-profile')
         }
@@ -75,15 +88,17 @@ const AddProfile = ({ navigation }: Props) => {
         const uid = userStore!.uid;
         try {
             if (validator.allValid()) {
-                database().ref(`users/${uid}/personalinfo`)
+                await database().ref(`users/${uid}/personalinfo`)
                     .push({
                         uid: uid,
                         firstName: firstName,
                         lastName: lastName,
                         email: email,
                         mobile: mobile,
-                        address: address
+                        address: address,
+                        profilePic: file
                     });
+                    navigation.navigate('drawertab');
             } else {
                 validator.showMessages();
                 forceUpdate()
@@ -105,7 +120,7 @@ const AddProfile = ({ navigation }: Props) => {
             mediaType: "photo",
             includeBase64: false
         }
-        let result;
+        let result: ImagePickerResponse;
         try {
             const cameraGranted = await PermissionsAndroid.request(
                 PermissionsAndroid.PERMISSIONS.CAMERA,
@@ -136,9 +151,19 @@ const AddProfile = ({ navigation }: Props) => {
             if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
                 console.log("Camera permission given");
                 result = await launchCamera(options);
-                console.log("sfdf", result);
+                let imageUri: (string | null | undefined) = null;
+                if (result && result.assets && result.assets.length > 0) {
+                    imageUri = result.assets[0].uri;
+                }
+                convertImageToBase64(imageUri!)
+                    .then((base64Data) => {
+                        console.log('Base64 data:', base64Data);
+                        setFile(base64Data);
+                    })
+                    .catch((error) => {
+                        console.error('Error converting image to base64:', error);
+                    });
                 
-                setFile(result);
             } else {
                 console.log("Camera permission denied");
             }

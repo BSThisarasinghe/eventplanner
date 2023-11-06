@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
 import { Button, Input } from "../../components";
 import SimpleReactValidator from 'simple-react-validator';
 import auth from '@react-native-firebase/auth';
@@ -53,12 +53,12 @@ const SignUp = ({ navigation }: Props) => {
     }
 
     return (
-        <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>
             </View>
-            <View style={{ flex: 1 }}>
+            {/* <View style={{ flex: 1 }}> */}
                 <Input
                     label={"Email"}
                     value={email}
@@ -92,21 +92,21 @@ const SignUp = ({ navigation }: Props) => {
                     leftIcon={'lock'}
                     rightIcon={showCnfPassword ? 'eye' : 'eye-slash'}
                     onPressRightIcon={() => setShowCnfPassword(!showCnfPassword)}
-                    inputStyle={{ marginBottom: 0 }}
+                    inputStyle={{ marginBottom: 50 }}
                     errorText={validator.message('confirm password', password, 'required')}
                 />
-            </View>
+            {/* </View> */}
             <Button
                 buttonText={'Sign Up'}
-                rightIcon={'arrowright'}
+                rightIcon={'arrow-right'}
                 onPress={onSignUp}
             />
             <Button
                 buttonText={'Login'}
-                rightIcon={'arrowright'}
+                rightIcon={'arrow-right'}
                 onPress={handleLogin}
             />
-        </View>
+        </ScrollView>
     )
 }
 
