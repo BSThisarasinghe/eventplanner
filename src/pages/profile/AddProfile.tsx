@@ -164,6 +164,8 @@ const AddProfile = ({ navigation }: Props) => {
                 setAddress={setAddress}
                 validator={validator}
                 forceUpdate={forceUpdate}
+                scrollEnable={true}
+                mode={'edit'}
             />}
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 {step == 2 && <Button

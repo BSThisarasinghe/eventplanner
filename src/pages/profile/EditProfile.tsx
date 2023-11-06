@@ -1,21 +1,39 @@
-import React, { useState } from "react";
-import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
 import { Button, Input } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import database from '@react-native-firebase/database';
 import { AddProfileDetails } from "./components/AddProfileDetails";
+import SimpleReactValidator from "simple-react-validator";
+import { userFetch } from "../../store/actions";
+import { useDispatch, useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const EditProfile = () => {
-    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [mode, setMode] = useState<string>('display');
     const [email, setEmail] = useState<string>('');
+    const [firstName, setFirstName] = useState<string>('');
+    const [lastName, setLastName] = useState<string>('');
+    const [mobile, setMobile] = useState<string>('');
+    const [address, setAddress] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+    const [uniqueKey, setUniqueKey] = useState<string>('');
+    const [file, setFile] = useState<any>(null);
+    const [validator] = useState(new SimpleReactValidator());
 
-    const handleLogin = () => {
-        // Implement your authentication logic here
-        // console.log('Username:', username);
-        // console.log('Password:', password);
-    };
+    const dispatch = useDispatch();
 
+    const {
+        userDetails
+    } = useSelector<any, any>(({ auth }) => auth);
+
+    const useForceUpdate = () => {
+        const [value, setValue] = useState(0);
+        return () => setValue(value => value + 1);
+    }
+
+    const forceUpdate = useForceUpdate()
     const onPressUpload = async () => {
 
         const options: any = {
@@ -61,38 +79,103 @@ const EditProfile = () => {
             console.log("err", err);
         }
 
-        console.log("##############", result);
+    }
 
+    useEffect(() => {
+        for (const userId in userDetails) {
+            if (userDetails.hasOwnProperty(userId)) {
+                const userData = userDetails[userId];
+                setUniqueKey(userId);
+                const firstName = userData.firstName;
+                const uid = userData.uid;
+                setFirstName(userData.firstName);
+                setLastName(userData.lastName);
+                setEmail(userData.email);
+                setAddress(userData.address);
+                setMobile(userData.mobile);
+                setFile(userData.file);
+
+                console.log("First Name:", firstName);
+                console.log("UID:", uid);
+            }
+        }
+    }, [JSON.stringify(userDetails)])
+
+    const getUser = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('user');
+            return jsonValue != null ? JSON.parse(jsonValue) : null;
+        } catch (e) {
+            // error reading value
+        }
+    };
+
+    const onPressEdit = () => {
+        setMode('edit')
+    }
+
+    const onPressSubmit = async () => {
+        const userStore = await getUser();
+        const uid = userStore.uid;
+        const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`);
+        dataRef.update({
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            mobile: mobile,
+            address: address
+          })
+          .then(() => {
+            console.log('Data updated successfully');
+          })
+          .catch((error) => {
+            console.error('Error updating data: ', error);
+          });
     }
 
     return (
-        <View style={styles.container}>
-            {/* <UploadHandler
-                onPressUpload={onPressUpload}
-            /> */}
+        <ScrollView contentContainerStyle={styles.container}>
+            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <Button
+                    buttonText={''}
+                    rightIcon={'camera'}
+                    buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}
+                    imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
+                    rightColor={'#da5e42'}
+                    onPress={onPressUpload}
+                    backgroundImage={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPySiXUBA5RwgJGrse29qL9oYVME7ZBsXUwpLhY1X&s' }}
+                />
+            </View>
             <AddProfileDetails
+                mode={mode}
+                firstName={firstName}
+                lastName={lastName}
+                email={email}
+                mobile={mobile}
+                address={address}
+                setFirstName={setFirstName}
+                setLastName={setLastName}
+                setEmail={setEmail}
+                setMobile={setMobile}
+                setAddress={setAddress}
+                validator={validator}
+                forceUpdate={forceUpdate}
+                scrollEnable={false}
             />
             <View>
                 <Button
-                    buttonText={'Back'}
-                    leftIcon={'arrow-left'}
-                    buttonStyle={{ backgroundColor: '#f1e6e3' }}
-                    buttonTextStyle={{ color: '#000' }}
-                    leftColor={'#000'}
-                />
-                <Button
-                    buttonText={'Next'}
-                    rightIcon={'arrow-right'}
+                    buttonText={mode == 'display' ? 'Edit' : 'Save'}
+                    onPress={mode == 'display' ? onPressEdit : onPressSubmit}
+                // onPress={step == 1 ? onPressNext : onSubmitProfile}
                 />
             </View>
-            {/* <Image source={{ uri: 'file:///data/user/0/com.eventplanner/cache/rn_image_picker_lib_temp_8293857d-2053-425b-802d-adc57f52bca9.jpg' }} style={{ width: 200, height: 200 }} /> */}
-        </View>
+        </ScrollView>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
         // alignItems: 'center',

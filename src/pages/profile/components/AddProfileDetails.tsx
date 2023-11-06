@@ -15,6 +15,8 @@ type Props = {
     setAddress: (address: string) => void;
     validator: any;
     forceUpdate: () => void;
+    scrollEnable: boolean;
+    mode: string;
 }
 
 const AddProfileDetails = ({
@@ -29,11 +31,13 @@ const AddProfileDetails = ({
     setMobile,
     setAddress,
     validator,
-    forceUpdate
+    forceUpdate,
+    scrollEnable,
+    mode
 }: Props) => {
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} scrollEnabled={scrollEnable}>
             <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>
@@ -51,7 +55,7 @@ const AddProfileDetails = ({
                     // leftIcon={'envelope'}
                     inputStyle={{ marginBottom: 0 }}
                     errorText={validator.message('first name', firstName, 'required')}
-
+                    editable={mode === 'edit'}
                 />
                 <Input
                     label={"Last Name"}
@@ -67,6 +71,7 @@ const AddProfileDetails = ({
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                     errorText={validator.message('last name', lastName, 'required')}
+                    editable={mode === 'edit'}
                 />
                 <Input
                     label={"Email"}
@@ -82,6 +87,7 @@ const AddProfileDetails = ({
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                     errorText={validator.message('email', email, 'required|email')}
+                    editable={mode === 'edit'}
                 />
                 <Input
                     label={"Phone number"}
@@ -97,6 +103,7 @@ const AddProfileDetails = ({
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                     errorText={validator.message('mobile', mobile, 'required|numeric|max:10')}
+                    editable={mode === 'edit'}
                 />
                 <Input
                     label={"Mailing address"}
@@ -112,6 +119,7 @@ const AddProfileDetails = ({
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
                     errorText={validator.message('address', address, 'required')}
+                    editable={mode === 'edit'}
                 />
             </View>
         </ScrollView>

@@ -11,13 +11,6 @@ const Header = ({ navigation }: any) => {
                     style={styles.image}
                 />
             </View>
-            <TouchableOpacity style={styles.searchButtonStyle}>
-                <Icon name="search" size={20} color="#00b8a9" />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.accountButtonStyle} onPress={() => navigation.navigate('login')}>
-                <Icon name="user" size={20} color="#00b8a9" />
-                <Text style={styles.buttonTextStyle}>Account</Text>
-            </TouchableOpacity>
         </View>
     )
 }

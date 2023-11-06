@@ -56,3 +56,13 @@ export const userFetch = (): any => {
             });
     }
 };
+
+export const logOutUser = (): any => {
+    return (dispatch: any) => {
+        auth().signOut().then(function () {
+            AsyncStorage.clear();
+        }).catch(function (error) {
+            console.log("Logout error", error);
+        });
+    }
+};
