@@ -72,7 +72,7 @@ const AddProfile = ({ navigation }: Props) => {
 
     const onSubmitProfile = async () => {
         const userStore = await getUser();
-        const uid = userStore.uid;
+        const uid = userStore!.uid;
         try {
             if (validator.allValid()) {
                 database().ref(`users/${uid}/personalinfo`)
@@ -136,6 +136,8 @@ const AddProfile = ({ navigation }: Props) => {
             if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
                 console.log("Camera permission given");
                 result = await launchCamera(options);
+                console.log("sfdf", result);
+                
                 setFile(result);
             } else {
                 console.log("Camera permission denied");

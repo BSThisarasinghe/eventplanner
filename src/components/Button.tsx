@@ -1,6 +1,6 @@
 import React from "react"
 import { Image, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import Icon from 'react-native-vector-icons/AntDesign';
+import Icon from 'react-native-vector-icons/Feather';
 
 const Button = ({ navigation, buttonStyle, buttonTextStyle, buttonText, rightIcon, onPress, rightColor, leftColor, leftIcon, backgroundImage, imageStyle }: any) => {
     return (

@@ -32,20 +32,15 @@ const UploadHandler = ({ onPressUpload, file }: Props) => {
         <Text>You are logged in for the first time and can upload a profile photo</Text>
       </View>
       <View style={{ flex: 2, justifyContent: 'flex-start', alignItems: 'center', paddingTop: 30 }}>
-        {file ? <>
-          <Image
-            source={{
-              uri: file.assets[0].uri,
-            }}
-            style={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
-          />
-        </> : <Button
+        <Button
           buttonText={''}
           rightIcon={'camera'}
-          buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
+          buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}
+          imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
           rightColor={'#da5e42'}
           onPress={onPressUpload}
-        />}
+          // backgroundImage={{ uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyPySiXUBA5RwgJGrse29qL9oYVME7ZBsXUwpLhY1X&s' }}
+        />
       </View>
     </View>
   )

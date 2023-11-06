@@ -87,7 +87,7 @@ const EditProfile = () => {
                 const userData = userDetails[userId];
                 setUniqueKey(userId);
                 const firstName = userData.firstName;
-                const uid = userData.uid;
+                const uid = userData!.uid;
                 setFirstName(userData.firstName);
                 setLastName(userData.lastName);
                 setEmail(userData.email);
@@ -116,7 +116,7 @@ const EditProfile = () => {
 
     const onPressSubmit = async () => {
         const userStore = await getUser();
-        const uid = userStore.uid;
+        const uid = userStore!.uid;
         const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`);
         dataRef.update({
             firstName: firstName,

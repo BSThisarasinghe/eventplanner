@@ -66,7 +66,7 @@ function DrawerContent({ navigation }: any) {
             <View style={{ flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Button 
                 buttonText={'Logout'}
-                leftIcon={'logout'}
+                leftIcon={'log-out'}
                 buttonStyle={{ backgroundColor: 'transparent' }}
                 buttonTextStyle={{ color: '#da5e42' }}
                 leftColor={'#da5e42'}
@@ -153,7 +153,7 @@ export default function RouteHandler() {
     useEffect(() => {
         let user = getData();
     }, []);
-
+    
     return (
         <Stack.Navigator
             initialRouteName="splash"
@@ -163,8 +163,8 @@ export default function RouteHandler() {
                 },
             })}
         >
-            {user ? <>
-                <Stack.Screen name="bottomtab" component={DrawerTab} options={{ headerShown: false }}  />
+            {(user != 'null' && user !== null) ? <>
+                {/* <Stack.Screen name="bottomtab" component={DrawerTab} options={{ headerShown: false }}  /> */}
                 <Stack.Screen name="add-profile" component={AddProfile} options={{ headerShown: false }} />
                 <Stack.Screen name="post-list" component={PostList} />
             </> : <>

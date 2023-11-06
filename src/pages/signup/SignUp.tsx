@@ -98,12 +98,12 @@ const SignUp = ({ navigation }: Props) => {
             </View>
             <Button
                 buttonText={'Sign Up'}
-                rightIcon={'arrow-right'}
+                rightIcon={'arrowright'}
                 onPress={onSignUp}
             />
             <Button
                 buttonText={'Login'}
-                rightIcon={'arrow-right'}
+                rightIcon={'arrowright'}
                 onPress={handleLogin}
             />
         </View>

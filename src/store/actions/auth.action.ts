@@ -48,13 +48,19 @@ export const setSignUp = (email: string, password: string, navigation: any): any
 
 export const userFetch = (): any => {
     const { currentUser } = auth();
-
-    return (dispatch: any) => {
-        database().ref(`users/${currentUser!.uid}/personalinfo`)
-            .on('value', snapshot => {
-                dispatch(authStore.actions.userFetchSuccess(snapshot.val()));
-            });
+    if (currentUser) {
+        return (dispatch: any) => {
+            database().ref(`users/${currentUser!.uid}/personalinfo`)
+                .on('value', snapshot => {
+                    dispatch(authStore.actions.userFetchSuccess(snapshot.val()));
+                });
+        }
+    } else {
+        return (dispatch: any) => {
+            dispatch(authStore.actions.userFetchSuccess(null));
+        }
     }
+
 };
 
 export const logOutUser = (): any => {
