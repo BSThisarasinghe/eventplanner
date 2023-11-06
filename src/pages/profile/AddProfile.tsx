@@ -6,7 +6,7 @@ import SimpleReactValidator from 'simple-react-validator';
 import RNFetchBlob from 'rn-fetch-blob';
 import RNFS from 'react-native-fs';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { Button, Input } from "../../components";
+import { Button, Input, Spinner } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
 import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { AddProfileDetails } from "./components/AddProfileDetails";
@@ -22,6 +22,7 @@ type Props = {
 
 const AddProfile = ({ navigation }: Props) => {
     const [step, setStep] = useState<number>(1);
+    const [loading, setLoading] = useState<boolean>(false);
 
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
@@ -34,7 +35,8 @@ const AddProfile = ({ navigation }: Props) => {
     const dispatch = useDispatch();
 
     const {
-        userDetails
+        userDetails,
+        userDetailsLoading
     } = useSelector<any, any>(({ auth }) => auth);
 
     const useForceUpdate = () => {
@@ -75,15 +77,15 @@ const AddProfile = ({ navigation }: Props) => {
     }, []);
 
     useEffect(() => {
-
         if (userDetails) {
             navigation.navigate('drawertab')
         } else {
             navigation.navigate('add-profile')
         }
-    }, [])
+    }, [userDetails])
 
     const onSubmitProfile = async () => {
+        setLoading(true);
         const userStore = await getUser();
         const uid = userStore!.uid;
         try {
@@ -98,14 +100,17 @@ const AddProfile = ({ navigation }: Props) => {
                         address: address,
                         profilePic: file
                     });
-                    navigation.navigate('drawertab');
+                setLoading(false);
+                navigation.navigate('drawertab');
             } else {
+                setLoading(false);
                 validator.showMessages();
                 forceUpdate()
             }
 
         } catch (error) {
             // Handle errors here.
+            setLoading(false);
         }
     };
 
@@ -163,7 +168,7 @@ const AddProfile = ({ navigation }: Props) => {
                     .catch((error) => {
                         console.error('Error converting image to base64:', error);
                     });
-                
+
             } else {
                 console.log("Camera permission denied");
             }
@@ -175,41 +180,42 @@ const AddProfile = ({ navigation }: Props) => {
 
     return (
         <View style={styles.container}>
-            {step == 1 ? <UploadHandler
-                onPressUpload={onPressUpload}
-                file={file}
-            /> : <AddProfileDetails
-                firstName={firstName}
-                lastName={lastName}
-                email={email}
-                mobile={mobile}
-                address={address}
-                setFirstName={setFirstName}
-                setLastName={setLastName}
-                setEmail={setEmail}
-                setMobile={setMobile}
-                setAddress={setAddress}
-                validator={validator}
-                forceUpdate={forceUpdate}
-                scrollEnable={true}
-                mode={'edit'}
-            />}
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
-                {step == 2 && <Button
-                    buttonText={'Back'}
-                    leftIcon={'arrow-left'}
-                    buttonStyle={{ backgroundColor: '#f1e6e3', marginRight: 10 }}
-                    buttonTextStyle={{ color: '#000' }}
-                    leftColor={'#000'}
-                    onPress={() => setStep(step - 1)}
+            {!userDetailsLoading ? <>
+                {step == 1 ? <UploadHandler
+                    onPressUpload={onPressUpload}
+                    file={file}
+                /> : <AddProfileDetails
+                    firstName={firstName}
+                    lastName={lastName}
+                    email={email}
+                    mobile={mobile}
+                    address={address}
+                    setFirstName={setFirstName}
+                    setLastName={setLastName}
+                    setEmail={setEmail}
+                    setMobile={setMobile}
+                    setAddress={setAddress}
+                    validator={validator}
+                    forceUpdate={forceUpdate}
+                    scrollEnable={true}
+                    mode={'edit'}
                 />}
-                <Button
-                    buttonText={'Next'}
-                    rightIcon={'arrow-right'}
-                    onPress={step == 1 ? onPressNext : onSubmitProfile}
-                />
-            </View>
-            {/* <Image source={{ uri: 'file:///data/user/0/com.eventplanner/cache/rn_image_picker_lib_temp_8293857d-2053-425b-802d-adc57f52bca9.jpg' }} style={{ width: 200, height: 200 }} /> */}
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                    {step == 2 && <Button
+                        buttonText={'Back'}
+                        leftIcon={'arrow-left'}
+                        buttonStyle={{ backgroundColor: '#f1e6e3', marginRight: 10 }}
+                        buttonTextStyle={{ color: '#000' }}
+                        leftColor={'#000'}
+                        onPress={() => setStep(step - 1)}
+                    />}
+                    {!loading ? <Button
+                        buttonText={'Next'}
+                        rightIcon={'arrow-right'}
+                        onPress={step == 1 ? onPressNext : onSubmitProfile}
+                    /> : <Spinner />}
+                </View>
+            </> : <Spinner />}
         </View>
     )
 }

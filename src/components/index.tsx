@@ -3,3 +3,4 @@ export * from './SubHeader';
 export * from './Footer';
 export * from './Input';
 export * from './Button';
+export * from './Spinner';

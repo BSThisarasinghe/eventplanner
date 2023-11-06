@@ -8,7 +8,9 @@ interface EventModel {
   eventDetails: EventItem[];
   users: User[];
   posts: Post[];
-  comments: Comment[]
+  comments: Comment[];
+  postsLoading: boolean;
+  commentsLoading: boolean;
 }
 
 const eventStore = createSlice({
@@ -17,7 +19,9 @@ const eventStore = createSlice({
     eventDetails: [],
     users: [],
     posts: [],
-    comments: []
+    comments: [],
+    postsLoading: false,
+    commentsLoading: false
   } as EventModel,
   reducers: {
     eventFetchSuccess: (state: EventModel, action: PayloadAction<EventItem[]>) => {
@@ -44,28 +48,44 @@ const eventStore = createSlice({
         users: []
       }
     },
+    postsFetchLoading: (state: EventModel) => {
+      return {
+        ...state,
+        postsLoading: true
+      }
+    },
     postsFetchSuccess: (state: EventModel, action: PayloadAction<Post[]>) => {
       return {
         ...state,
-        posts: action.payload
+        posts: action.payload,
+        postsLoading: false
       }
     },
     postsFetchFail: (state: EventModel) => {
       return {
         ...state,
-        posts: []
+        posts: [],
+        postsLoading: false
+      }
+    },
+    commentsFetchLoading: (state: EventModel) => {
+      return {
+        ...state,
+        commentsLoading: true
       }
     },
     commentsFetchSuccess: (state: EventModel, action: PayloadAction<Comment[]>) => {
       return {
         ...state,
-        comments: action.payload
+        comments: action.payload,
+        commentsLoading: false
       }
     },
     commentsFetchFail: (state: EventModel) => {
       return {
         ...state,
-        comments: []
+        comments: [],
+        commentsLoading: false
       }
     }
   },

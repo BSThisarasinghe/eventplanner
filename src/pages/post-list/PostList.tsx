@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchComments, fetchPosts } from "../../store/actions";
 import { Post } from "../home/models/posts.model";
 import { Comment } from "../home/models/comments.model";
+import { Spinner } from "../../components";
 
 const windowHeight = Dimensions.get('window').height;
 
@@ -17,7 +18,9 @@ const PostList = ({ navigation }: any) => {
 
     const {
         posts,
-        comments
+        comments,
+        postsLoading,
+        commentsLoading
     } = useSelector<any, any>(({ event }) => event);
 
     useEffect(() => {
@@ -74,14 +77,14 @@ const PostList = ({ navigation }: any) => {
     return (
         <View style={{ flex: 1, padding: 10, backgroundColor: '#f9f9f9' }}>
             <Text style={{ color: '#000', fontSize: 24, fontWeight: '700', marginBottom: 30 }}>All posts</Text>
-            <FlatList
+            {!postsLoading ? <FlatList
                 data={posts}
                 renderItem={renderItem}
                 keyExtractor={(item, index) => index.toString()}
                 ListFooterComponent={<View style={{ height: 30, justifyContent: 'center', alignItems: 'center' }}>
                     <Text style={{ color: '#d8d8d8' }}>--- You've got it all ---</Text>
                 </View>}
-            />
+            /> : <Spinner />}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -103,11 +106,11 @@ const PostList = ({ navigation }: any) => {
                         <Text style={{ fontSize: 14, fontWeight: '300', marginBottom: 30 }}>{postItem?.body}</Text>
                     </View>
                     <Text style={{ color: '#000', fontSize: 24, fontWeight: '700', marginBottom: 30 }}>Comments</Text>
-                    <FlatList
+                    {!commentsLoading ? <FlatList
                         data={comments}
                         renderItem={renderComment}
                         keyExtractor={(item, index) => index.toString()}
-                    />
+                    /> : <Spinner />}
                 </View>
             </Modal>
         </View>

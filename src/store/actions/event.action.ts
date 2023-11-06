@@ -30,6 +30,7 @@ export const fetchUsers = (): any => {
 
 export const fetchPosts = (): any => {
     return (dispatch: any) => {
+        dispatch(orderStore.actions.postsFetchLoading());
         getPosts()
             .then((response: any) => {
                 dispatch(orderStore.actions.postsFetchSuccess(response.data));
@@ -42,6 +43,7 @@ export const fetchPosts = (): any => {
 
 export const fetchComments = (postId: number): any => {
     return (dispatch: any) => {
+        dispatch(orderStore.actions.commentsFetchLoading());
         getComments()
             .then((response: any) => {
                 const commentsForPostId = response.data.filter((comment: Comment) => comment.postId === postId);

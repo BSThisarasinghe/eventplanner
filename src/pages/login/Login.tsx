@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SimpleReactValidator from 'simple-react-validator';
-import { Button, Input } from "../../components";
+import { Button, Input, Spinner } from "../../components";
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setSignIn } from "../../store/actions";
@@ -16,6 +16,8 @@ const Login = ({ navigation }: Props) => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+
     const [password, setPassword] = useState<string>('');
     const [validator] = useState(new SimpleReactValidator())
     const dispatch = useDispatch();
@@ -33,15 +35,18 @@ const Login = ({ navigation }: Props) => {
 
     const onLogin = async () => {
         try {
+            setLoading(true);
             // const response = await signInWithEmailAndPassword(auth, email, password);
             // console.log("response 2", response);
             if (validator.allValid()) {
                 dispatch(setSignIn(email, password, navigation))
             } else {
+                setLoading(false);
                 validator.showMessages();
                 forceUpdate()
             }
         } catch (error) {
+            setLoading(false);
             console.log("reposne 2 error", error);
         }
     }
@@ -92,16 +97,17 @@ const Login = ({ navigation }: Props) => {
                 />
             </View>
             {/* </View> */}
-            <Button
+            {!loading ? <Button
                 buttonText={'Login'}
                 rightIcon={'arrow-right'}
                 onPress={onLogin}
-            />
+            /> : <Spinner/>}
             <Button
                 buttonText={'Sign Up'}
                 rightIcon={'arrow-right'}
                 onPress={handleSignUp}
             />
+
         </ScrollView>
     )
 }

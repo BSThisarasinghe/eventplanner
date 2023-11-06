@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
-import { Button, Input } from "../../components";
+import { Button, Input, Spinner } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import database from '@react-native-firebase/database';
@@ -21,12 +21,15 @@ const EditProfile = () => {
     const [password, setPassword] = useState<string>('');
     const [uniqueKey, setUniqueKey] = useState<string>('');
     const [file, setFile] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+
     const [validator] = useState(new SimpleReactValidator());
 
     const dispatch = useDispatch();
 
     const {
-        userDetails
+        userDetails,
+        userDetailsLoading
     } = useSelector<any, any>(({ auth }) => auth);
 
     const useForceUpdate = () => {
@@ -119,9 +122,6 @@ const EditProfile = () => {
                 setAddress(userData.address);
                 setMobile(userData.mobile);
                 setFile(userData.profilePic);
-
-                console.log("First Name:", firstName);
-                console.log("UID:", uid);
             }
         }
     }, [JSON.stringify(userDetails)])
@@ -140,6 +140,7 @@ const EditProfile = () => {
     }
 
     const onPressSubmit = async () => {
+        setLoading(true);
         const userStore = await getUser();
         const uid = userStore!.uid;
         const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`);
@@ -153,49 +154,54 @@ const EditProfile = () => {
         })
             .then(() => {
                 console.log('Data updated successfully');
+                setLoading(false);
                 setMode('display')
             })
             .catch((error) => {
+                setLoading(false);
                 console.error('Error updating data: ', error);
             });
     }
 
     return (
-        <ScrollView contentContainerStyle={styles.container}>
-            <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-                <Button
-                    buttonText={''}
-                    rightIcon={mode == 'edit' ? 'camera' : ''}
-                    buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}
-                    imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
-                    rightColor={'#da5e42'}
-                    onPress={onPressUpload}
-                    backgroundImage={{ uri: 'data:image/png;base64,' + file }}
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
+            {!userDetailsLoading ? <>
+                <View style={{ justifyContent: 'center', alignItems: 'center' }}>
+                    <Button
+                        buttonText={''}
+                        rightIcon={mode == 'edit' ? 'camera' : ''}
+                        buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}
+                        imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
+                        rightColor={'#da5e42'}
+                        onPress={onPressUpload}
+                        backgroundImage={{ uri: 'data:image/png;base64,' + file }}
+                    />
+                </View>
+                <AddProfileDetails
+                    mode={mode}
+                    firstName={firstName}
+                    lastName={lastName}
+                    email={email}
+                    mobile={mobile}
+                    address={address}
+                    setFirstName={setFirstName}
+                    setLastName={setLastName}
+                    setEmail={setEmail}
+                    setMobile={setMobile}
+                    setAddress={setAddress}
+                    validator={validator}
+                    forceUpdate={forceUpdate}
+                    scrollEnable={false}
                 />
-            </View>
-            <AddProfileDetails
-                mode={mode}
-                firstName={firstName}
-                lastName={lastName}
-                email={email}
-                mobile={mobile}
-                address={address}
-                setFirstName={setFirstName}
-                setLastName={setLastName}
-                setEmail={setEmail}
-                setMobile={setMobile}
-                setAddress={setAddress}
-                validator={validator}
-                forceUpdate={forceUpdate}
-                scrollEnable={false}
-            />
-            <View>
-                <Button
-                    buttonText={mode == 'display' ? 'Edit' : 'Save'}
-                    onPress={mode == 'display' ? onPressEdit : onPressSubmit}
-                // onPress={step == 1 ? onPressNext : onSubmitProfile}
-                />
-            </View>
+                <View>
+                    {!loading ? <Button
+                        buttonText={mode == 'display' ? 'Edit' : 'Save'}
+                        onPress={mode == 'display' ? onPressEdit : onPressSubmit}
+                    // onPress={step == 1 ? onPressNext : onSubmitProfile}
+                    /> : <Spinner />}
+                </View>
+            </> :
+                <Spinner />}
         </ScrollView>
     )
 }

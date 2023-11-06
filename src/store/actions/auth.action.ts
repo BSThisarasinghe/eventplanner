@@ -50,6 +50,7 @@ export const userFetch = (): any => {
     const { currentUser } = auth();
     if (currentUser) {
         return (dispatch: any) => {
+            dispatch(authStore.actions.userFetchLoading());
             database().ref(`users/${currentUser!.uid}/personalinfo`)
                 .on('value', snapshot => {
                     dispatch(authStore.actions.userFetchSuccess(snapshot.val()));
@@ -57,7 +58,7 @@ export const userFetch = (): any => {
         }
     } else {
         return (dispatch: any) => {
-            dispatch(authStore.actions.userFetchSuccess(null));
+            dispatch(authStore.actions.userFetchFail(null));
         }
     }
 

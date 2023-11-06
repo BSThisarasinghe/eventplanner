@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
-import { Button, Input } from "../../components";
+import { Button, Input, Spinner } from "../../components";
 import SimpleReactValidator from 'simple-react-validator';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -18,6 +18,8 @@ const SignUp = ({ navigation }: Props) => {
     const [password, setPassword] = useState<string>('');
     const [cnfPassword, setCnfPassword] = useState<string>('');
     const [pwdError, setPwdError] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
+
     const [validator] = useState(new SimpleReactValidator());
 
     const dispatch = useDispatch();
@@ -37,17 +39,21 @@ const SignUp = ({ navigation }: Props) => {
 
     const onSignUp = async () => {
         try {
+            setLoading(true);
             if (validator.allValid()) {
                 if (password == cnfPassword) {
                     dispatch(setSignUp(email, password, navigation))
                 } else {
+                    setLoading(false);
                     setPwdError('Passwords do not match')
                 }
             } else {
+                setLoading(false);
                 validator.showMessages();
                 forceUpdate()
             }
         } catch (error) {
+            setLoading(false);
             console.log("reposne 1 error", error);
         }
     }
@@ -59,48 +65,48 @@ const SignUp = ({ navigation }: Props) => {
                 <Text>Welcome to your portal</Text>
             </View>
             {/* <View style={{ flex: 1 }}> */}
-                <Input
-                    label={"Email"}
-                    value={email}
-                    onChangeText={(value: string) => setEmail(value)}
-                    placeholder={"e.g: name@example.com"}
-                    placeholderTextColor={"#d8d8d8"}
-                    leftIcon={'envelope'}
-                    inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('email', email, 'required|email')}
-                />
-                <Input
-                    label={"Password"}
-                    value={password}
-                    secureTextEntry={!showPassword}
-                    onChangeText={(value: string) => setPassword(value)}
-                    placeholder={"*********"}
-                    placeholderTextColor={"#d8d8d8"}
-                    leftIcon={'lock'}
-                    rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
-                    inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('password', password, 'required')}
-                />
-                <Input
-                    label={"Confirm Password"}
-                    value={cnfPassword}
-                    secureTextEntry={!showCnfPassword}
-                    onChangeText={(value: string) => setCnfPassword(value)}
-                    placeholder={"*********"}
-                    placeholderTextColor={"#d8d8d8"}
-                    leftIcon={'lock'}
-                    rightIcon={showCnfPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowCnfPassword(!showCnfPassword)}
-                    inputStyle={{ marginBottom: 50 }}
-                    errorText={validator.message('confirm password', password, 'required')}
-                />
+            <Input
+                label={"Email"}
+                value={email}
+                onChangeText={(value: string) => setEmail(value)}
+                placeholder={"e.g: name@example.com"}
+                placeholderTextColor={"#d8d8d8"}
+                leftIcon={'envelope'}
+                inputStyle={{ marginBottom: 0 }}
+                errorText={validator.message('email', email, 'required|email')}
+            />
+            <Input
+                label={"Password"}
+                value={password}
+                secureTextEntry={!showPassword}
+                onChangeText={(value: string) => setPassword(value)}
+                placeholder={"*********"}
+                placeholderTextColor={"#d8d8d8"}
+                leftIcon={'lock'}
+                rightIcon={showPassword ? 'eye' : 'eye-slash'}
+                onPressRightIcon={() => setShowPassword(!showPassword)}
+                inputStyle={{ marginBottom: 0 }}
+                errorText={validator.message('password', password, 'required')}
+            />
+            <Input
+                label={"Confirm Password"}
+                value={cnfPassword}
+                secureTextEntry={!showCnfPassword}
+                onChangeText={(value: string) => setCnfPassword(value)}
+                placeholder={"*********"}
+                placeholderTextColor={"#d8d8d8"}
+                leftIcon={'lock'}
+                rightIcon={showCnfPassword ? 'eye' : 'eye-slash'}
+                onPressRightIcon={() => setShowCnfPassword(!showCnfPassword)}
+                inputStyle={{ marginBottom: 50 }}
+                errorText={validator.message('confirm password', password, 'required')}
+            />
             {/* </View> */}
-            <Button
+            {!loading ? <Button
                 buttonText={'Sign Up'}
                 rightIcon={'arrow-right'}
                 onPress={onSignUp}
-            />
+            /> : <Spinner />}
             <Button
                 buttonText={'Login'}
                 rightIcon={'arrow-right'}

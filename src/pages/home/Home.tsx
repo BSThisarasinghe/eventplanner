@@ -5,7 +5,7 @@ import { Button, Footer, SubHeader } from '../../components';
 import { useDispatch, useSelector } from "react-redux";
 import DataItem from '../../models/data-item.model';
 import MenuItem from '../../models/menu-item.model';
-import { fetchEventImages, fetchPosts, fetchUsers } from '../../store/actions';
+import { fetchEventImages, fetchPosts, fetchUsers, userFetch } from '../../store/actions';
 import Icon from 'react-native-vector-icons/Feather';
 import { User } from './models/users.model';
 import { EventItem } from './models/event-list-response.model';
@@ -22,6 +22,15 @@ export default function Home({ navigation }: any) {
         users,
         posts
     } = useSelector<any, any>(({ event }) => event);
+
+    const {
+        userDetails,
+        userDetailsLoading
+    } = useSelector<any, any>(({ auth }) => auth);
+
+    useEffect(() => {
+        dispatch(userFetch());
+    }, []);
 
     useEffect(() => {
         dispatch(fetchEventImages());
@@ -79,7 +88,7 @@ export default function Home({ navigation }: any) {
         navigation.navigate('post-list')
     }
 
-    console.log("imageList", imageList);
+    // console.log("imageList", imageList);
 
 
     return (
