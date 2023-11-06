@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Input } from "../../components";
-// import { FIREBASE_AUTH } from "../../firebase/firebase-config";
+import SimpleReactValidator from 'simple-react-validator';
 import auth from '@react-native-firebase/auth';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useDispatch } from "react-redux";
+import { setSignUp } from "../../store/actions";
 
 type Props = {
     navigation: any
@@ -15,36 +17,36 @@ const SignUp = ({ navigation }: Props) => {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [cnfPassword, setCnfPassword] = useState<string>('');
+    const [pwdError, setPwdError] = useState<string>('');
+    const [validator] = useState(new SimpleReactValidator());
+
+    const dispatch = useDispatch();
+
+    const useForceUpdate = () => {
+        const [value, setValue] = useState(0);
+        return () => setValue(value => value + 1);
+    }
+
+    const forceUpdate = useForceUpdate()
+
     // const [auth, setAuth] = useState<any>(FIREBASE_AUTH);
 
     const handleLogin = () => {
-        navigation.navigate('add-profile')
+        navigation.navigate('login')
     };
 
     const onSignUp = async () => {
         try {
-            auth()
-            .createUserWithEmailAndPassword(email, password)
-            .then(async(user: any) => {
-                const { currentUser } = auth();
-                console.log("current User", JSON.stringify(currentUser));
-
-                await AsyncStorage.setItem('user', JSON.stringify(currentUser));
-              navigation.navigate('add-profile')
-            })
-            .catch((error: any) => {
-              if (error.code === 'auth/email-already-in-use') {
-                console.log('That email address is already in use!');
-              }
-          
-              if (error.code === 'auth/invalid-email') {
-                console.log('That email address is invalid!');
-              }
-          
-              console.error(error);
-            });
-            
-
+            if (validator.allValid()) {
+                if (password == cnfPassword) {
+                    dispatch(setSignUp(email, password, navigation))
+                } else {
+                    setPwdError('Passwords do not match')
+                }
+            } else {
+                validator.showMessages();
+                forceUpdate()
+            }
         } catch (error) {
             console.log("reposne 1 error", error);
         }
@@ -65,6 +67,7 @@ const SignUp = ({ navigation }: Props) => {
                     placeholderTextColor={"#d8d8d8"}
                     leftIcon={'envelope'}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('email', email, 'required|email')}
                 />
                 <Input
                     label={"Password"}
@@ -77,18 +80,20 @@ const SignUp = ({ navigation }: Props) => {
                     rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('password', password, 'required')}
                 />
                 <Input
                     label={"Confirm Password"}
-                    value={password}
-                    secureTextEntry={!showPassword}
-                    onChangeText={(value: string) => setPassword(value)}
+                    value={cnfPassword}
+                    secureTextEntry={!showCnfPassword}
+                    onChangeText={(value: string) => setCnfPassword(value)}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     leftIcon={'lock'}
-                    rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    onPressRightIcon={() => setShowPassword(!showPassword)}
+                    rightIcon={showCnfPassword ? 'eye' : 'eye-slash'}
+                    onPressRightIcon={() => setShowCnfPassword(!showCnfPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('confirm password', password, 'required')}
                 />
             </View>
             <Button

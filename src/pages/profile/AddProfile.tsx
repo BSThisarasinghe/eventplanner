@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 // import { FIREBASE_AUTH, FIREBASE_STORE } from "../../firebase/firebase-config";
 import { addDoc, collection } from 'firebase/firestore';
+import SimpleReactValidator from 'simple-react-validator';
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Button, Input } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
@@ -10,13 +11,36 @@ import { AddProfileDetails } from "./components/AddProfileDetails";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
+import { useDispatch, useSelector } from "react-redux";
+import { userFetch } from "../../store/actions";
 
-const AddProfile = () => {
+type Props = {
+    navigation: any
+}
+
+const AddProfile = ({ navigation }: Props) => {
+    const [step, setStep] = useState<number>(1);
+
     const [firstName, setFirstName] = useState<string>('');
     const [lastName, setLastName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [mobile, setMobile] = useState<string>('');
     const [address, setAddress] = useState<string>('');
+    const [file, setFile] = useState<any>(null);
+    const [validator] = useState(new SimpleReactValidator());
+
+    const dispatch = useDispatch();
+
+    const {
+        userDetails
+    } = useSelector<any, any>(({ auth }) => auth);
+
+    const useForceUpdate = () => {
+        const [value, setValue] = useState(0);
+        return () => setValue(value => value + 1);
+    }
+
+    const forceUpdate = useForceUpdate()
 
     const getUser = async () => {
         try {
@@ -28,45 +52,51 @@ const AddProfile = () => {
     };
 
     useEffect(() => {
+        dispatch(userFetch());
+    }, []);
+
+    useEffect(() => {
         const userStore = getUser();
         console.log("userStore", userStore);
     }, []);
 
+    useEffect(() => {
+        console.log("##############################", JSON.stringify(userDetails));
+        
+        if (userDetails) {
+            navigation.navigate('bottomtab')
+        } else {
+            navigation.navigate('add-profile')
+        }
+    }, [])
+
     const onSubmitProfile = async () => {
-        // Implement your authentication logic here
-        // console.log('Username:', username);
-        // console.log('Password:', password);
         const userStore = await getUser();
         const uid = userStore.uid;
         try {
-            // await firestore().collection('users').doc(uid).set({
-            //     name: 'name',
-            //     profilePictureUrl: 'profilePictureUrl',
-            // });
-            // Profile data successfully stored.
-            // const doc = addDoc(collection(FIREBASE_STORE, 'profile'), {
-            //     uid: uid,
-            //     firstName: firstName,
-            //     lastName: lastName,
-            //     email: email,
-            //     mobile: mobile,
-            //     address: address
-            // });
-            // console.log("####", doc);
-            database().ref(`users/${uid}/personalinfo`)
-                .push({
-                    uid: uid,
-                    firstName: firstName,
-                    lastName: lastName,
-                    email: email,
-                    mobile: mobile,
-                    address: address
-                });
+            if (validator.allValid()) {
+                database().ref(`users/${uid}/personalinfo`)
+                    .push({
+                        uid: uid,
+                        firstName: firstName,
+                        lastName: lastName,
+                        email: email,
+                        mobile: mobile,
+                        address: address
+                    });
+            } else {
+                validator.showMessages();
+                forceUpdate()
+            }
 
         } catch (error) {
             // Handle errors here.
         }
     };
+
+    const onPressNext = () => {
+        setStep(step + 1)
+    }
 
     const onPressUpload = async () => {
 
@@ -106,6 +136,7 @@ const AddProfile = () => {
             if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
                 console.log("Camera permission given");
                 result = await launchCamera(options);
+                setFile(result);
             } else {
                 console.log("Camera permission denied");
             }
@@ -113,16 +144,14 @@ const AddProfile = () => {
             console.log("err", err);
         }
 
-        console.log("##############", result);
-
     }
 
     return (
         <View style={styles.container}>
-            {/* <UploadHandler
+            {step == 1 ? <UploadHandler
                 onPressUpload={onPressUpload}
-            /> */}
-            <AddProfileDetails
+                file={file}
+            /> : <AddProfileDetails
                 firstName={firstName}
                 lastName={lastName}
                 email={email}
@@ -133,19 +162,22 @@ const AddProfile = () => {
                 setEmail={setEmail}
                 setMobile={setMobile}
                 setAddress={setAddress}
-            />
-            <View>
-                <Button
+                validator={validator}
+                forceUpdate={forceUpdate}
+            />}
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                {step == 2 && <Button
                     buttonText={'Back'}
                     leftIcon={'arrow-left'}
-                    buttonStyle={{ backgroundColor: '#f1e6e3' }}
+                    buttonStyle={{ backgroundColor: '#f1e6e3', marginRight: 10 }}
                     buttonTextStyle={{ color: '#000' }}
                     leftColor={'#000'}
-                />
+                    onPress={() => setStep(step - 1)}
+                />}
                 <Button
                     buttonText={'Next'}
                     rightIcon={'arrow-right'}
-                    onPress={onSubmitProfile}
+                    onPress={step == 1 ? onPressNext : onSubmitProfile}
                 />
             </View>
             {/* <Image source={{ uri: 'file:///data/user/0/com.eventplanner/cache/rn_image_picker_lib_temp_8293857d-2053-425b-802d-adc57f52bca9.jpg' }} style={{ width: 200, height: 200 }} /> */}

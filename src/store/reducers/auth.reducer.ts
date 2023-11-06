@@ -2,12 +2,14 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface AuthModel {
   authDetails: any;
+  userDetails: any;
 }
 
 const authStore = createSlice({
   name: "auth-store",
   initialState: {
-    authDetails: null
+    authDetails: null,
+    userDetails: null
   } as AuthModel,
   reducers: {
     loginSuccess: (state: AuthModel, action: PayloadAction<any>) => {
@@ -20,6 +22,18 @@ const authStore = createSlice({
       return {
         ...state,
         authDetails: null
+      }
+    },
+    userFetchSuccess: (state: AuthModel, action: PayloadAction<any>) => {
+      return {
+        ...state,
+        userDetails: action.payload
+      }
+    },
+    userFetchFail: (state: AuthModel, action: PayloadAction<any>) => {
+      return {
+        ...state,
+        userDetails: null
       }
     }
   },

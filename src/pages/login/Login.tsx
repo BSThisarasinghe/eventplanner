@@ -19,6 +19,7 @@ const Login = ({ navigation }: Props) => {
     const [password, setPassword] = useState<string>('');
     const [validator] = useState(new SimpleReactValidator())
     const dispatch = useDispatch();
+    
     const useForceUpdate = () => {
         const [value, setValue] = useState(0);
         return () => setValue(value => value + 1);

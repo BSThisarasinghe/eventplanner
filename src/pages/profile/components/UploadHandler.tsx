@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View, Image } from "react-native";
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import { Button } from "../../../components";
 
 type Props = {
-  onPressUpload: () => void
+  onPressUpload: () => void,
+  file: any
 }
 
-const UploadHandler = ({onPressUpload}: Props) => {
+const UploadHandler = ({ onPressUpload, file }: Props) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -31,13 +32,20 @@ const UploadHandler = ({onPressUpload}: Props) => {
         <Text>You are logged in for the first time and can upload a profile photo</Text>
       </View>
       <View style={{ flex: 2, justifyContent: 'flex-start', alignItems: 'center', paddingTop: 30 }}>
-        <Button
+        {file ? <>
+          <Image
+            source={{
+              uri: file.assets[0].uri,
+            }}
+            style={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
+          />
+        </> : <Button
           buttonText={''}
           rightIcon={'camera'}
           buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
           rightColor={'#da5e42'}
           onPress={onPressUpload}
-        />
+        />}
       </View>
     </View>
   )

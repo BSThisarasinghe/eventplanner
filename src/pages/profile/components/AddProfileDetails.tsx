@@ -13,6 +13,8 @@ type Props = {
     setEmail: (email: string) => void;
     setMobile: (mobile: string) => void;
     setAddress: (address: string) => void;
+    validator: any;
+    forceUpdate: () => void;
 }
 
 const AddProfileDetails = ({
@@ -26,6 +28,8 @@ const AddProfileDetails = ({
     setEmail,
     setMobile,
     setAddress,
+    validator,
+    forceUpdate
 }: Props) => {
 
     return (
@@ -38,55 +42,76 @@ const AddProfileDetails = ({
                 <Input
                     label={"First Name"}
                     value={firstName}
-                    onChangeText={(value: string) => setFirstName(value)}
+                    onChangeText={(value: string) => {
+                        setFirstName(value);
+                        forceUpdate();
+                    }}
                     placeholder={"e.g: name@example.com"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'envelope'}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('first name', firstName, 'required')}
+
                 />
                 <Input
                     label={"Last Name"}
                     value={lastName}
-                    onChangeText={(value: string) => setLastName(value)}
+                    onChangeText={(value: string) => {
+                        setLastName(value);
+                        forceUpdate();
+                    }}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('last name', lastName, 'required')}
                 />
                 <Input
                     label={"Email"}
                     value={email}
-                    onChangeText={(value: string) => setEmail(value)}
+                    onChangeText={(value: string) => {
+                        setEmail(value);
+                        forceUpdate();
+                    }}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('email', email, 'required|email')}
                 />
                 <Input
                     label={"Phone number"}
                     value={mobile}
-                    onChangeText={(value: string) => setMobile(value)}
+                    onChangeText={(value: string) => {
+                        setMobile(value)
+                        forceUpdate();
+                    }}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('mobile', mobile, 'required|numeric|max:10')}
                 />
                 <Input
                     label={"Mailing address"}
                     value={address}
-                    onChangeText={(value: string) => setAddress(value)}
+                    onChangeText={(value: string) => {
+                        setAddress(value)
+                        forceUpdate();
+                    }}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
+                    errorText={validator.message('address', address, 'required')}
                 />
             </View>
         </ScrollView>
