@@ -142,31 +142,37 @@ const EditProfile = () => {
 
     const onPressSubmit = async () => {
         setLoading(true);
-        const userStore = await getUser();
-        const uid = userStore!.uid;
-        const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`);
-        dataRef.update({
-            firstName: firstName,
-            lastName: lastName,
-            email: email,
-            mobile: mobile,
-            address: address,
-            profilePic: file
-        })
-            .then(() => {
-                console.log('Data updated successfully');
-                setLoading(false);
-                setMode('display')
+        if (validator.allValid()) {
+            const userStore = await getUser();
+            const uid = userStore!.uid;
+            const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`);
+            dataRef.update({
+                firstName: firstName,
+                lastName: lastName,
+                email: email,
+                mobile: mobile,
+                address: address,
+                profilePic: file
             })
-            .catch((error) => {
-                setLoading(false);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Something went wrong!'
+                .then(() => {
+                    console.log('Data updated successfully');
+                    setLoading(false);
+                    setMode('display')
+                })
+                .catch((error) => {
+                    setLoading(false);
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Something went wrong!'
+                    });
+                    console.error('Error updating data: ', error);
                 });
-                console.error('Error updating data: ', error);
-            });
+        } else {
+            setLoading(false);
+            validator.showMessages();
+            forceUpdate()
+        }
     }
 
     return (

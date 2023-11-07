@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
-        elevation: 5,
+        // elevation: 5,
         padding: 20,
     },
     modalHeader: {
