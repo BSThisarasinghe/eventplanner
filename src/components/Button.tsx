@@ -2,7 +2,21 @@ import React from "react"
 import { Image, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 import Icon from 'react-native-vector-icons/Feather';
 
-const Button = ({ navigation, buttonStyle, buttonTextStyle, buttonText, rightIcon, onPress, rightColor, leftColor, leftIcon, backgroundImage, imageStyle }: any) => {
+type Props = {
+    navigation?: any;
+    buttonStyle?: object;
+    buttonTextStyle?: object;
+    buttonText?: string;
+    rightIcon?: string;
+    onPress?: () => void;
+    rightColor?: string;
+    leftColor?: string;
+    leftIcon?: string;
+    backgroundImage?: any;
+    imageStyle?: object;
+}
+
+const Button = ({ navigation, buttonStyle, buttonTextStyle, buttonText, rightIcon, onPress, rightColor, leftColor, leftIcon, backgroundImage, imageStyle }: Props) => {
     return (
         <TouchableOpacity onPress={onPress} style={[styles.button, buttonStyle]}>
             <ImageBackground source={backgroundImage} style={[{ flexDirection: 'row' }, imageStyle]}>

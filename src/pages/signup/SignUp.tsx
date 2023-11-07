@@ -61,7 +61,7 @@ const SignUp = ({ navigation }: Props) => {
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
             <Toast />
-            <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            <View style={styles.titleWrapper}>
                 <Text style={styles.header}>Welcome</Text>
                 <Text>Welcome to your portal</Text>
             </View>
@@ -166,7 +166,8 @@ const styles = StyleSheet.create({
     },
     facebookButton: { backgroundColor: '#4c69ba', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
     googleButton: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#d8d8d8', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
-    appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 }
+    appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 },
+    titleWrapper: { flex: 1, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }
 });
 
 export default SignUp;

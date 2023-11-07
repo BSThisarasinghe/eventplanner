@@ -1,18 +1,23 @@
 import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
+import { EventItem } from '../models/event-list-response.model';
 
-const ImageItem = ({ item }: any) => {
+type Props = {
+    item: EventItem;
+}
+
+const ImageItem = ({ item }: Props) => {
     return (
-        <View style={{ flexDirection: 'column', width: 300, borderWidth: 1, borderColor: '#d8d8d8' }}>
+        <View style={styles.imageContainer}>
             <Image
                 source={{ uri: item.thumbnailUrl }}
-                style={{ height: 200, marginBottom: 20 }}
+                style={styles.image}
             />
-            <View style={{ padding: 10 }}>
-                <Text style={{ color: '#000', fontWeight: '700', fontSize: 16 }}>
+            <View style={styles.contentContainer}>
+                <Text style={styles.title}>
                     {item.title}
                 </Text>
-                <Text style={{ fontWeight: '300' }}>
+                <Text style={styles.linkText}>
                     Link: {item.url}
                 </Text>
             </View>
@@ -20,10 +25,29 @@ const ImageItem = ({ item }: any) => {
     );
 }
 
+
 const styles = StyleSheet.create({
-    spinnerStyle: {
-        height: 80
-    }
+    imageContainer: {
+        flexDirection: 'column',
+        width: 300,
+        borderWidth: 1,
+        borderColor: '#d8d8d8',
+    },
+    image: {
+        height: 200,
+        marginBottom: 20,
+    },
+    contentContainer: {
+        padding: 10,
+    },
+    title: {
+        color: '#000',
+        fontWeight: '700',
+        fontSize: 16,
+    },
+    linkText: {
+        fontWeight: '300',
+    },
 });
 
 export { ImageItem };
