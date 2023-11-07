@@ -89,8 +89,8 @@ const AddProfile = ({ navigation }: Props) => {
         const userStore = await getUser();
         const uid = userStore!.uid;
         try {
-            if (validator.allValid()) {
-                await database().ref(`users/${uid}/personalinfo`)
+            if (validator.allValid()) { // validation
+                await database().ref(`users/${uid}/personalinfo`) // update profile info
                     .push({
                         uid: uid,
                         firstName: firstName,
@@ -127,7 +127,7 @@ const AddProfile = ({ navigation }: Props) => {
         }
         let result: ImagePickerResponse;
         try {
-            const cameraGranted = await PermissionsAndroid.request(
+            const cameraGranted = await PermissionsAndroid.request( // Permission for camera
                 PermissionsAndroid.PERMISSIONS.CAMERA,
                 {
                     title: "App Camera Permission",
@@ -181,7 +181,7 @@ const AddProfile = ({ navigation }: Props) => {
     return (
         <View style={styles.container}>
             {!userDetailsLoading ? <>
-                {step == 1 ? <UploadHandler
+                {step == 1 ? <UploadHandler // wizard implementation
                     onPressUpload={onPressUpload}
                     file={file}
                 /> : <AddProfileDetails

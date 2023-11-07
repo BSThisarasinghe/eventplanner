@@ -44,7 +44,7 @@ const SignUp = ({ navigation }: Props) => {
     const onSignUp = async () => {
         try {
             if (validator.allValid()) {
-                if (password == cnfPassword) {
+                if (password == cnfPassword) { // Chech whether passwords match
                     dispatch(setSignUp(email, password, navigation))
                 } else {
                     setPwdError('Passwords do not match')
@@ -100,7 +100,7 @@ const SignUp = ({ navigation }: Props) => {
                 rightIcon={showCnfPassword ? 'eye' : 'eye-slash'}
                 onPressRightIcon={() => setShowCnfPassword(!showCnfPassword)}
                 inputStyle={{ marginBottom: 50 }}
-                errorText={validator.message('confirm password', password, 'required')}
+                errorText={pwdError === '' ? validator.message('confirm password', password, 'required') : pwdError}
             />
             {/* </View> */}
             {!signUpLoading ? <Button

@@ -93,7 +93,7 @@ const EditProfile = () => {
                     if (result && result.assets && result.assets.length > 0) {
                         imageUri = result.assets[0].uri;
                     }
-                    convertImageToBase64(imageUri!)
+                    convertImageToBase64(imageUri!) // convert image to base64 to send to firebase
                         .then((base64Data) => {
                             console.log('Base64 data:', base64Data);
                             setFile(base64Data);
@@ -145,7 +145,7 @@ const EditProfile = () => {
         if (validator.allValid()) {
             const userStore = await getUser();
             const uid = userStore!.uid;
-            const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`);
+            const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`); // Update profile data
             dataRef.update({
                 firstName: firstName,
                 lastName: lastName,

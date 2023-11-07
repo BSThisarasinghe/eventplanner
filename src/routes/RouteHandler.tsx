@@ -164,11 +164,11 @@ export default function RouteHandler() {
             // })}
         >
             {(user != 'null' && user !== null) ? <>
-                <Stack.Screen name="drawertab" component={DrawerTab} options={{ headerShown: false }}  />
+                 <Stack.Screen name="drawertab" component={DrawerTab} options={{ headerShown: false }}  /> {/* Protected routes  */}
                 <Stack.Screen name="add-profile" component={AddProfile} options={{ headerShown: false }} />
                 <Stack.Screen name="post-list" component={PostList} options={{ headerTitle: 'Posts & Comments' }} />
             </> : <>
-                <Stack.Screen name="login" component={Login} options={{ headerShown: false }} />
+                <Stack.Screen name="login" component={Login} options={{ headerShown: false }} /> {/* Public routes routes  */}
                 <Stack.Screen name="signup" component={SignUp} options={{ headerShown: false }} />
             </>}
 

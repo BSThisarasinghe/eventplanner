@@ -34,7 +34,7 @@ export default function Home({ navigation }: any) {
     }, []);
 
     useEffect(() => {
-        const thumbnailUrls = eventDetails.slice(0, 10).filter((item: any) => item && item.thumbnailUrl).map((item: any) => ({
+        const thumbnailUrls = eventDetails.slice(0, 10).filter((item: any) => item && item.thumbnailUrl).map((item: any) => ({ // Limit array to 10 objects/ Null filter
             url: item.thumbnailUrl
         }));
         setImageList(thumbnailUrls);
