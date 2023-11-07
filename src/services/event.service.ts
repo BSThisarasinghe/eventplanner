@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL } from '../../constants.config';
+import { API_URL} from "@env";
 
 const getEventImages = () => {
     return axios({
