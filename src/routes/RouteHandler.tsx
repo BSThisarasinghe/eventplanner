@@ -18,6 +18,7 @@ import AntDesignIcon from 'react-native-vector-icons/AntDesign';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { logOutUser, userFetch } from '../store/actions';
+import { PROFILE_AVATAR } from '../../constants.config';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -53,7 +54,7 @@ function DrawerContent({ navigation }: any) {
             <View style={{ height: 60, padding: 4, flexDirection: 'row', marginBottom: 5, justifyContent: 'center', borderBottomWidth: 1, borderBottomColor: '#d8d8d8' }}>
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                     <Image
-                        source={{ uri: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' }}
+                        source={{ uri: PROFILE_AVATAR }}
                         style={{ width: 50, height: 50, borderRadius: 30 }}
                     />
                 </View>
@@ -164,11 +165,11 @@ export default function RouteHandler() {
             // })}
         >
             {(user != 'null' && user !== null) ? <>
-                 <Stack.Screen name="drawertab" component={DrawerTab} options={{ headerShown: false }}  /> {/* Protected routes  */}
+                 <Stack.Screen name="drawertab" component={DrawerTab} options={{ headerShown: false }}  />
                 <Stack.Screen name="add-profile" component={AddProfile} options={{ headerShown: false }} />
                 <Stack.Screen name="post-list" component={PostList} options={{ headerTitle: 'Posts & Comments' }} />
             </> : <>
-                <Stack.Screen name="login" component={Login} options={{ headerShown: false }} /> {/* Public routes routes  */}
+                <Stack.Screen name="login" component={Login} options={{ headerShown: false }} />
                 <Stack.Screen name="signup" component={SignUp} options={{ headerShown: false }} />
             </>}
 

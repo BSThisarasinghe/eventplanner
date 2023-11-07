@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Image, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { User } from '../models/users.model';
+import { PROFILE_AVATAR } from '../../../../constants.config';
 
 type Props = {
     item: User;
@@ -12,7 +13,7 @@ const UserItem = ({ item }: Props) => {
         <View style={styles.userItemContainer}>
             <View style={styles.userImageContainer}>
                 <Image
-                    source={{ uri: 'https://img.freepik.com/premium-vector/man-avatar-profile-picture-vector-illustration_268834-538.jpg' }}
+                    source={{ uri: PROFILE_AVATAR }}
                     style={styles.userImage}
                 />
             </View>
