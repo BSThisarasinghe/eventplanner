@@ -17,7 +17,7 @@ export const setSignIn = (email: string, password: string, navigation: any): any
                 dispatch(authStore.actions.loginSuccess(currentUser));
             })
             .catch((error: any) => {
-                console.log(error);
+                // console.log(error);
                 Toast.show({
                     type: 'error',
                     text1: 'Error',
@@ -35,7 +35,7 @@ export const setSignUp = (email: string, password: string, navigation: any): any
             .createUserWithEmailAndPassword(email, password)
             .then(async (user: any) => {
                 const { currentUser } = auth();
-                console.log("current User", JSON.stringify(currentUser));
+                // console.log("current User", JSON.stringify(currentUser));
                 dispatch(authStore.actions.signUpSuccess());
 
                 await AsyncStorage.setItem('user', JSON.stringify(currentUser));
@@ -44,7 +44,7 @@ export const setSignUp = (email: string, password: string, navigation: any): any
             .catch((error: any) => {
                 dispatch(authStore.actions.signUpFail());
                 if (error.code === 'auth/email-already-in-use') {
-                    console.log('That email address is already in use!');
+                    // console.log('That email address is already in use!');
                     Toast.show({
                         type: 'error',
                         text1: 'Error',
@@ -53,7 +53,7 @@ export const setSignUp = (email: string, password: string, navigation: any): any
                 }
 
                 if (error.code === 'auth/invalid-email') {
-                    console.log('That email address is invalid!');
+                    // console.log('That email address is invalid!');
                     Toast.show({
                         type: 'error',
                         text1: 'Error',
@@ -61,7 +61,7 @@ export const setSignUp = (email: string, password: string, navigation: any): any
                     });
                 }
 
-                console.error(error);
+                // console.error(error);
             });
     }
 };
@@ -89,7 +89,7 @@ export const logOutUser = (): any => {
         auth().signOut().then(function () {
             AsyncStorage.clear();
         }).catch(function (error) {
-            console.log("Logout error", error);
+            // console.log("Logout error", error);
         });
     }
 };

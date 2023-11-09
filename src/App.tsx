@@ -84,7 +84,7 @@ function App(): JSX.Element {
 
   useEffect(() => {
     const userStore = getData();
-    console.log(userStore);
+    // console.log(userStore);
   }, []);
 
   const requestUserPermission = async () => {
@@ -94,7 +94,7 @@ function App(): JSX.Element {
       authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
     if (enabled) {
-      console.log('Authorization status:', authStatus);
+      // console.log('Authorization status:', authStatus);
     }
     return enabled;
   }
@@ -108,7 +108,7 @@ function App(): JSX.Element {
           console.log(token);
         });
       } else {
-        console.log("Failed");
+        // console.log("Failed");
       }
 
       messaging()

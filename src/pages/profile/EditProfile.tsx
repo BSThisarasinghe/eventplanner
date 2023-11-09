@@ -87,7 +87,7 @@ const EditProfile = () => {
                     }
                 );
                 if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
-                    console.log("Camera permission given");
+                    // console.log("Camera permission given");
                     result = await launchCamera(options);
                     let imageUri: (string | null | undefined) = null;
                     if (result && result.assets && result.assets.length > 0) {
@@ -95,17 +95,17 @@ const EditProfile = () => {
                     }
                     convertImageToBase64(imageUri!) // convert image to base64 to send to firebase
                         .then((base64Data) => {
-                            console.log('Base64 data:', base64Data);
+                            // console.log('Base64 data:', base64Data);
                             setFile(base64Data);
                         })
                         .catch((error) => {
-                            console.error('Error converting image to base64:', error);
+                            // console.error('Error converting image to base64:', error);
                         });
                 } else {
-                    console.log("Camera permission denied");
+                    // console.log("Camera permission denied");
                 }
             } catch (err) {
-                console.log("err", err);
+                // console.log("err", err);
             }
         }
     }
@@ -155,7 +155,7 @@ const EditProfile = () => {
                 profilePic: file
             })
                 .then(() => {
-                    console.log('Data updated successfully');
+                    // console.log('Data updated successfully');
                     setLoading(false);
                     setMode('display')
                 })

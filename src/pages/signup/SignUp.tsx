@@ -54,7 +54,7 @@ const SignUp = ({ navigation }: Props) => {
                 forceUpdate()
             }
         } catch (error) {
-            console.log("reposne 1 error", error);
+            // console.log("reposne 1 error", error);
         }
     }
 
