@@ -4,26 +4,17 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import { Button } from "../../../components";
 
-type Props = {
-  onPressUpload: () => void,
-  file: any
+interface ValidationErrors {
+  [key: string]: string;
 }
 
-const UploadHandler = ({ onPressUpload, file }: Props) => {
-  const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [email, setEmail] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
+type Props = {
+  onPressUpload: () => void,
+  file: any,
+  errors: ValidationErrors,
+}
 
-  const handleLogin = () => {
-    // Implement your authentication logic here
-    // console.log('Username:', username);
-    // console.log('Password:', password);
-  };
-
-  useEffect(() => {
-    // requestCameraPermission();
-    // requestGalleryPermission();
-  }, [])
+const UploadHandler = ({ onPressUpload, file, errors }: Props) => {
 
   return (
     <View style={styles.container}>
@@ -41,6 +32,9 @@ const UploadHandler = ({ onPressUpload, file }: Props) => {
           onPress={onPressUpload}
           backgroundImage={{ uri: 'data:image/png;base64,' + file }}
         />
+        <View style={styles.errorContainerStyle}>
+          <Text style={styles.errorStyle}>{errors.file}</Text>
+        </View>
       </View>
     </View>
   )
@@ -95,7 +89,15 @@ const styles = StyleSheet.create({
   },
   facebookButton: { backgroundColor: '#4c69ba', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
   googleButton: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#d8d8d8', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
-  appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 }
+  appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 },
+  errorContainerStyle: {
+      paddingLeft: 20
+  },
+  errorStyle: {
+      fontSize: 12,
+      color: 'red',
+      marginTop: 5
+  }
 });
 
 export { UploadHandler };

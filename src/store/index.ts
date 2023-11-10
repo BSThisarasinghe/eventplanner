@@ -6,7 +6,7 @@ import rootReducer from './reducers';
 const middleware = (getDefaultMiddleware: any) => {
   const middlewares: any[] = [thunk];
 
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.SERVER_ENV === 'development') {
     middlewares.push(logger);
   }
 

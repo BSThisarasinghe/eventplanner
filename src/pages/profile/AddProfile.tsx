@@ -15,21 +15,30 @@ import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 import { useDispatch, useSelector } from "react-redux";
 import { userFetch } from "../../store/actions";
+import { validateFile, validateInputs, validateSubmit } from "../../utils/validations";
 
 type Props = {
     navigation: any
+}
+
+interface ValidationErrors {
+    [key: string]: string;
 }
 
 const AddProfile = ({ navigation }: Props) => {
     const [step, setStep] = useState<number>(1);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [email, setEmail] = useState<string>('');
-    const [mobile, setMobile] = useState<string>('');
-    const [address, setAddress] = useState<string>('');
-    const [file, setFile] = useState<any>('');
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [inputData, setInputData] = useState<any>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        mobile: '',
+        address: '',
+        file: ''
+    });
+
     const [validator] = useState(new SimpleReactValidator());
 
     const dispatch = useDispatch();
@@ -84,38 +93,16 @@ const AddProfile = ({ navigation }: Props) => {
         }
     }, [userDetails])
 
-    const onSubmitProfile = async () => {
-        setLoading(true);
-        const userStore = await getUser();
-        const uid = userStore!.uid;
-        try {
-            if (validator.allValid()) { // validation
-                await database().ref(`users/${uid}/personalinfo`) // update profile info
-                    .push({
-                        uid: uid,
-                        firstName: firstName,
-                        lastName: lastName,
-                        email: email,
-                        mobile: mobile,
-                        address: address,
-                        profilePic: file
-                    });
-                setLoading(false);
-                navigation.navigate('drawertab');
-            } else {
-                setLoading(false);
-                validator.showMessages();
-                forceUpdate()
-            }
-
-        } catch (error) {
-            // Handle errors here.
-            setLoading(false);
+    const onPressNext = async () => {
+        const validationErrors: any = await validateFile(inputData);
+        console.log("#######################33", validationErrors);
+        
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0) {
+            setStep(step + 1)
+        } else {
+            setErrors(validationErrors);
         }
-    };
-
-    const onPressNext = () => {
-        setStep(step + 1)
     }
 
     const onPressUpload = async () => {
@@ -163,7 +150,11 @@ const AddProfile = ({ navigation }: Props) => {
                 convertImageToBase64(imageUri!)
                     .then((base64Data) => {
                         // console.log('Base64 data:', base64Data);
-                        setFile(base64Data);
+                        setInputData((prevData: any) => ({
+                            ...prevData,
+                            ['file']: base64Data
+                        }));
+                        setErrors({});
                     })
                     .catch((error) => {
                         // console.error('Error converting image to base64:', error);
@@ -178,25 +169,68 @@ const AddProfile = ({ navigation }: Props) => {
 
     }
 
+    const handleFormSubmit = async () => {
+        setLoading(true);
+        const userStore = await getUser();
+        const uid = userStore!.uid;
+        let errorValidations: ValidationErrors = {
+            firstName: 'required',
+            lastName: 'required',
+            email: 'required|email',
+            mobile: 'required|numeric|max:10',
+            address: 'required'
+        }
+        const validationErrors: any = await validateSubmit(inputData, errorValidations);
+        setErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length === 0) {
+            try {
+                await database().ref(`users/${uid}/personalinfo`)
+                    .push({
+                        uid: uid,
+                        firstName: inputData.firstName,
+                        lastName: inputData.lastName,
+                        email: inputData.email,
+                        mobile: inputData.mobile,
+                        address: inputData.address,
+                        profilePic: inputData.file
+                    });
+                setLoading(false);
+                navigation.navigate('drawertab');
+
+            } catch (error) {
+                // Handle errors here.
+                setLoading(false);
+            }
+        } else {
+            setLoading(false);
+            setErrors(validationErrors);
+            // forceUpdate();
+        }
+    };
+
+    const handleInputChange = (fieldName: string, value: string, rules: string) => {
+        setInputData((prevData: any) => ({
+            ...prevData,
+            [fieldName]: value
+        }));
+        const validationErrors = validateInputs(fieldName, value, rules);
+        setErrors(validationErrors);
+        // forceUpdate();
+    };
+
     return (
         <View style={styles.container}>
             {!userDetailsLoading ? <>
                 {step == 1 ? <UploadHandler // wizard implementation
                     onPressUpload={onPressUpload}
-                    file={file}
+                    file={inputData.file}
+                    errors={errors}
                 /> : <AddProfileDetails
-                    firstName={firstName}
-                    lastName={lastName}
-                    email={email}
-                    mobile={mobile}
-                    address={address}
-                    setFirstName={setFirstName}
-                    setLastName={setLastName}
-                    setEmail={setEmail}
-                    setMobile={setMobile}
-                    setAddress={setAddress}
-                    validator={validator}
-                    forceUpdate={forceUpdate}
+                    inputData={inputData}
+                    handleInputChange={handleInputChange}
+                    validateInputs={validateInputs}
+                    errors={errors}
                     scrollEnable={true}
                     mode={'edit'}
                 />}
@@ -212,7 +246,7 @@ const AddProfile = ({ navigation }: Props) => {
                     {!loading ? <Button
                         buttonText={'Next'}
                         rightIcon={'arrow-right'}
-                        onPress={step == 1 ? onPressNext : onSubmitProfile}
+                        onPress={step == 1 ? onPressNext : handleFormSubmit}
                     /> : <Spinner />}
                 </View>
             </> : <Spinner />}

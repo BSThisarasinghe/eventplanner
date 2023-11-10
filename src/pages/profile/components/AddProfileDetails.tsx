@@ -2,38 +2,26 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Input } from "../../../components";
 
+interface ValidationErrors {
+    [key: string]: string;
+}
+
+
 type Props = {
-    firstName: string;
-    lastName: string;
-    email: string;
-    mobile: string;
-    address: string;
-    setFirstName: (firstName: string) => void;
-    setLastName: (lastName: string) => void;
-    setEmail: (email: string) => void;
-    setMobile: (mobile: string) => void;
-    setAddress: (address: string) => void;
-    validator: any;
-    forceUpdate: () => void;
     scrollEnable: boolean;
     mode: string;
+    validateInputs: (key: string, value: string, rules: string) => ValidationErrors,
+    handleInputChange: (fieldName: string, value: string, rules: string) => void,
+    errors: ValidationErrors,
+    inputData: any
 }
 
 const AddProfileDetails = ({
-    firstName,
-    lastName,
-    email,
-    mobile,
-    address,
-    setFirstName,
-    setLastName,
-    setEmail,
-    setMobile,
-    setAddress,
-    validator,
-    forceUpdate,
     scrollEnable,
-    mode
+    mode,
+    handleInputChange,
+    errors,
+    inputData
 }: Props) => {
 
     return (
@@ -45,80 +33,90 @@ const AddProfileDetails = ({
             <View style={{ flex: 1 }}>
                 <Input
                     label={"First Name"}
-                    value={firstName}
-                    onChangeText={(value: string) => {
-                        setFirstName(value);
-                        forceUpdate();
-                    }}
+                    value={inputData.firstName}
+                    // onChangeText={(value: string) => {
+                    //     validateInputs("First Name", value, 'required');
+                    //     setFirstName(value);
+                    //     forceUpdate();
+                    // }}
+                    onChangeText={(value: string) => handleInputChange('firstName', value, 'required')}
                     placeholder={"e.g: name@example.com"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'envelope'}
                     inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('first name', firstName, 'required')}
+                    errorText={errors['firstName']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Last Name"}
-                    value={lastName}
-                    onChangeText={(value: string) => {
-                        setLastName(value);
-                        forceUpdate();
-                    }}
+                    value={inputData.lastName}
+                    // onChangeText={(value: string) => {
+                    //     setLastName(value);
+                    //     forceUpdate();
+                    // }}
+                    onChangeText={(value: string) => handleInputChange('lastName', value, 'required')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('last name', lastName, 'required')}
+                    // errorText={validator.message('last name', lastName, 'required')}
+                    errorText={errors['lastName']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Email"}
-                    value={email}
-                    onChangeText={(value: string) => {
-                        setEmail(value);
-                        forceUpdate();
-                    }}
+                    value={inputData.email}
+                    // onChangeText={(value: string) => {
+                    //     setEmail(value);
+                    //     forceUpdate();
+                    // }}
+                    onChangeText={(value: string) => handleInputChange('email', value, 'required|email')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('email', email, 'required|email')}
+                    // errorText={validator.message('email', email, 'required|email')}
+                    errorText={errors['email']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Phone number"}
-                    value={mobile}
-                    onChangeText={(value: string) => {
-                        setMobile(value)
-                        forceUpdate();
-                    }}
+                    value={inputData.mobile}
+                    // onChangeText={(value: string) => {
+                    //     setMobile(value)
+                    //     forceUpdate();
+                    // }}
+                    onChangeText={(value: string) => handleInputChange('mobile', value, 'required|numeric|max:10')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('mobile', mobile, 'required|numeric|max:10')}
+                    // errorText={validator.message('mobile', mobile, 'required|numeric|max:10')}
+                    errorText={errors['mobile']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Mailing address"}
-                    value={address}
-                    onChangeText={(value: string) => {
-                        setAddress(value)
-                        forceUpdate();
-                    }}
+                    value={inputData.address}
+                    // onChangeText={(value: string) => {
+                    //     setAddress(value)
+                    //     forceUpdate();
+                    // }}
+                    onChangeText={(value: string) => handleInputChange('address', value, 'required')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
                     // leftIcon={'lock'}
                     // rightIcon={showPassword ? 'eye' : 'eye-slash'}
                     // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    errorText={validator.message('address', address, 'required')}
+                    // errorText={validator.message('address', address, 'required')}
+                    errorText={errors['address']}
                     editable={mode === 'edit'}
                 />
             </View>

@@ -11,18 +11,27 @@ import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFetchBlob from "rn-fetch-blob";
 import Toast from "react-native-toast-message";
+import { validateInputs, validateSubmit } from "../../utils/validations";
+
+interface ValidationErrors {
+    [key: string]: string;
+}
 
 const EditProfile = () => {
     const [mode, setMode] = useState<string>('display');
-    const [email, setEmail] = useState<string>('');
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [mobile, setMobile] = useState<string>('');
-    const [address, setAddress] = useState<string>('');
+
     const [password, setPassword] = useState<string>('');
     const [uniqueKey, setUniqueKey] = useState<string>('');
-    const [file, setFile] = useState<any>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [errors, setErrors] = useState<ValidationErrors>({});
+    const [inputData, setInputData] = useState<any>({
+        firstName: '',
+        lastName: '',
+        email: '',
+        mobile: '',
+        address: '',
+        file: ''
+    });
 
     const [validator] = useState(new SimpleReactValidator());
 
@@ -50,7 +59,6 @@ const EditProfile = () => {
         });
     };
 
-    const forceUpdate = useForceUpdate()
     const onPressUpload = async () => {
         if (mode === 'edit') {
             const options: any = {
@@ -87,7 +95,6 @@ const EditProfile = () => {
                     }
                 );
                 if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
-                    // console.log("Camera permission given");
                     result = await launchCamera(options);
                     let imageUri: (string | null | undefined) = null;
                     if (result && result.assets && result.assets.length > 0) {
@@ -95,8 +102,10 @@ const EditProfile = () => {
                     }
                     convertImageToBase64(imageUri!) // convert image to base64 to send to firebase
                         .then((base64Data) => {
-                            // console.log('Base64 data:', base64Data);
-                            setFile(base64Data);
+                            setInputData((prevData: any) => ({
+                                ...prevData,
+                                ['file']: base64Data
+                            }));
                         })
                         .catch((error) => {
                             // console.error('Error converting image to base64:', error);
@@ -117,12 +126,15 @@ const EditProfile = () => {
                 setUniqueKey(userId);
                 const firstName = userData.firstName;
                 const uid = userData!.uid;
-                setFirstName(userData.firstName);
-                setLastName(userData.lastName);
-                setEmail(userData.email);
-                setAddress(userData.address);
-                setMobile(userData.mobile);
-                setFile(userData.profilePic);
+
+                setInputData({
+                    firstName: userData.firstName,
+                    lastName:userData.lastName,
+                    email: userData.email,
+                    mobile:userData.mobile,
+                    address: userData.address,
+                    file: userData.profilePic,
+                })
             }
         }
     }, [JSON.stringify(userDetails)])
@@ -140,22 +152,36 @@ const EditProfile = () => {
         setMode('edit')
     }
 
-    const onPressSubmit = async () => {
-        setLoading(true);
-        if (validator.allValid()) {
-            const userStore = await getUser();
-            const uid = userStore!.uid;
+    const handleFormSubmit = async () => {
+
+        const userStore = await getUser();
+        const uid = userStore!.uid;
+
+        let errorValidations: ValidationErrors = {
+            firstName: 'required',
+            lastName: 'required',
+            email: 'required|email',
+            mobile: 'required|numeric|max:10',
+            address: 'required',
+            file: 'required'
+        }
+        const validationErrors: any = await validateSubmit(inputData, errorValidations);
+
+        setErrors(validationErrors);
+
+        if (Object.keys(validationErrors).length === 0) {
+            setLoading(true);
+
             const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`); // Update profile data
             dataRef.update({
-                firstName: firstName,
-                lastName: lastName,
-                email: email,
-                mobile: mobile,
-                address: address,
-                profilePic: file
+                firstName: inputData.firstName,
+                lastName: inputData.lastName,
+                email: inputData.email,
+                mobile: inputData.mobile,
+                address: inputData.address,
+                profilePic: inputData.file
             })
                 .then(() => {
-                    // console.log('Data updated successfully');
                     setLoading(false);
                     setMode('display')
                 })
@@ -170,10 +196,19 @@ const EditProfile = () => {
                 });
         } else {
             setLoading(false);
-            validator.showMessages();
-            forceUpdate()
+            setErrors(validationErrors);
         }
-    }
+    };
+
+    const handleInputChange = (fieldName: string, value: string, rules: string) => {
+        setInputData((prevData: any) => ({
+            ...prevData,
+            [fieldName]: value
+        }));
+        const validationErrors = validateInputs(fieldName, value, rules);
+        setErrors(validationErrors);
+        // forceUpdate();
+    };
 
     return (
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps={'always'}>
@@ -187,29 +222,22 @@ const EditProfile = () => {
                         imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
                         rightColor={'#da5e42'}
                         onPress={onPressUpload}
-                        backgroundImage={{ uri: 'data:image/png;base64,' + file }}
+                        backgroundImage={{ uri: 'data:image/png;base64,' + inputData.file }}
                     />
                 </View>
                 <AddProfileDetails
                     mode={mode}
-                    firstName={firstName}
-                    lastName={lastName}
-                    email={email}
-                    mobile={mobile}
-                    address={address}
-                    setFirstName={setFirstName}
-                    setLastName={setLastName}
-                    setEmail={setEmail}
-                    setMobile={setMobile}
-                    setAddress={setAddress}
-                    validator={validator}
-                    forceUpdate={forceUpdate}
+                    // validator={validator}
+                    inputData={inputData}
+                    handleInputChange={handleInputChange}
+                    validateInputs={validateInputs}
+                    errors={errors}
                     scrollEnable={false}
                 />
                 <View>
                     {!loading ? <Button
                         buttonText={mode == 'display' ? 'Edit' : 'Save'}
-                        onPress={mode == 'display' ? onPressEdit : onPressSubmit}
+                        onPress={mode == 'display' ? onPressEdit : handleFormSubmit}
                     // onPress={step == 1 ? onPressNext : onSubmitProfile}
                     /> : <Spinner />}
                 </View>
