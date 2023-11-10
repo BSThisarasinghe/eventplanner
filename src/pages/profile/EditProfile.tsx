@@ -6,12 +6,12 @@ import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import database from '@react-native-firebase/database';
 import { AddProfileDetails } from "./components/AddProfileDetails";
 import SimpleReactValidator from "simple-react-validator";
-import { userFetch } from "../../store/actions";
+import { updateProfile, userFetch } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import RNFetchBlob from "rn-fetch-blob";
 import Toast from "react-native-toast-message";
 import { validateInputs, validateSubmit } from "../../utils/validations";
+import { convertImageToBase64, requestCameraPermissions, requestReadPermissions, requestWritePermissions } from "../../utils/flie-handling";
+import { getData } from "../../utils/async-storage";
 
 interface ValidationErrors {
     [key: string]: string;
@@ -20,9 +20,7 @@ interface ValidationErrors {
 const EditProfile = () => {
     const [mode, setMode] = useState<string>('display');
 
-    const [password, setPassword] = useState<string>('');
     const [uniqueKey, setUniqueKey] = useState<string>('');
-    const [loading, setLoading] = useState<boolean>(false);
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [inputData, setInputData] = useState<any>({
         firstName: '',
@@ -42,22 +40,9 @@ const EditProfile = () => {
         userDetailsLoading
     } = useSelector<any, any>(({ auth }) => auth);
 
-    const useForceUpdate = () => {
-        const [value, setValue] = useState(0);
-        return () => setValue(value => value + 1);
-    }
-
-    const convertImageToBase64 = (imageUri: (string | null)) => {
-        return new Promise((resolve, reject) => {
-            RNFetchBlob.fs.readFile(imageUri!, 'base64')
-                .then((data) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    };
+    const {
+        profilePostLoading
+    } = useSelector<any, any>(({ firebase }) => firebase);
 
     const onPressUpload = async () => {
         if (mode === 'edit') {
@@ -68,48 +53,21 @@ const EditProfile = () => {
             }
             let result;
             try {
-                const cameraGranted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.CAMERA,
-                    {
-                        title: "App Camera Permission",
-                        message: "App needs access to your camera ",
-                        buttonNeutral: "Ask Me Later",
-                        buttonNegative: "Cancel",
-                        buttonPositive: "OK"
-                    }
-                );
-                const readGranted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-                    {
-                        title: 'Gallery Permission',
-                        message: 'App needs access to your gallery.',
-                        buttonPositive: 'OK',
-                    }
-                );
-                const writeGranted = await PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                    {
-                        title: 'Gallery Permission',
-                        message: 'App needs access to your gallery.',
-                        buttonPositive: 'OK',
-                    }
-                );
-                if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+                let cameraGranted = await requestCameraPermissions();
+                let readGranted = await requestReadPermissions();
+                let writeGranted = await requestWritePermissions();
+                if (cameraGranted && readGranted && writeGranted) {
                     result = await launchCamera(options);
                     let imageUri: (string | null | undefined) = null;
                     if (result && result.assets && result.assets.length > 0) {
                         imageUri = result.assets[0].uri;
                     }
-                    convertImageToBase64(imageUri!) // convert image to base64 to send to firebase
-                        .then((base64Data) => {
-                            setInputData((prevData: any) => ({
-                                ...prevData,
-                                ['file']: base64Data
-                            }));
-                        })
-                        .catch((error) => {
-                            // console.error('Error converting image to base64:', error);
-                        });
+                    let base64Data = await convertImageToBase64(imageUri!)
+
+                    setInputData((prevData: any) => ({
+                        ...prevData,
+                        ['file']: base64Data
+                    }));
                 } else {
                     // console.log("Camera permission denied");
                 }
@@ -124,14 +82,12 @@ const EditProfile = () => {
             if (userDetails.hasOwnProperty(userId)) {
                 const userData = userDetails[userId];
                 setUniqueKey(userId);
-                const firstName = userData.firstName;
-                const uid = userData!.uid;
 
                 setInputData({
                     firstName: userData.firstName,
-                    lastName:userData.lastName,
+                    lastName: userData.lastName,
                     email: userData.email,
-                    mobile:userData.mobile,
+                    mobile: userData.mobile,
                     address: userData.address,
                     file: userData.profilePic,
                 })
@@ -139,22 +95,13 @@ const EditProfile = () => {
         }
     }, [JSON.stringify(userDetails)])
 
-    const getUser = async () => {
-        try {
-            const jsonValue = await AsyncStorage.getItem('user');
-            return jsonValue != null ? JSON.parse(jsonValue) : null;
-        } catch (e) {
-            // error reading value
-        }
-    };
-
     const onPressEdit = () => {
         setMode('edit')
     }
 
     const handleFormSubmit = async () => {
 
-        const userStore = await getUser();
+        const userStore = await getData();
         const uid = userStore!.uid;
 
         let errorValidations: ValidationErrors = {
@@ -170,32 +117,8 @@ const EditProfile = () => {
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length === 0) {
-            setLoading(true);
-
-            const dataRef = database().ref(`users/${uid}/personalinfo/${uniqueKey}`); // Update profile data
-            dataRef.update({
-                firstName: inputData.firstName,
-                lastName: inputData.lastName,
-                email: inputData.email,
-                mobile: inputData.mobile,
-                address: inputData.address,
-                profilePic: inputData.file
-            })
-                .then(() => {
-                    setLoading(false);
-                    setMode('display')
-                })
-                .catch((error) => {
-                    setLoading(false);
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Error',
-                        text2: 'Something went wrong!'
-                    });
-                    console.error('Error updating data: ', error);
-                });
+            dispatch(updateProfile(inputData, uid, uniqueKey, setMode));
         } else {
-            setLoading(false);
             setErrors(validationErrors);
         }
     };
@@ -235,7 +158,7 @@ const EditProfile = () => {
                     scrollEnable={false}
                 />
                 <View>
-                    {!loading ? <Button
+                    {!profilePostLoading ? <Button
                         buttonText={mode == 'display' ? 'Edit' : 'Save'}
                         onPress={mode == 'display' ? onPressEdit : handleFormSubmit}
                     // onPress={step == 1 ? onPressNext : onSubmitProfile}

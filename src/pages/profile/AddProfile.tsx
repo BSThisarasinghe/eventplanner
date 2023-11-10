@@ -1,21 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { Image, PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-// import { FIREBASE_AUTH, FIREBASE_STORE } from "../../firebase/firebase-config";
-import { addDoc, collection } from 'firebase/firestore';
-import SimpleReactValidator from 'simple-react-validator';
-import RNFetchBlob from 'rn-fetch-blob';
-import RNFS from 'react-native-fs';
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
-import { Button, Input, Spinner } from "../../components";
+import { StyleSheet, View } from "react-native";
+import { Button, Spinner } from "../../components";
 import { UploadHandler } from "./components/UploadHandler";
-import { ImagePickerResponse, launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import { ImagePickerResponse, launchCamera } from 'react-native-image-picker';
 import { AddProfileDetails } from "./components/AddProfileDetails";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database';
 import { useDispatch, useSelector } from "react-redux";
 import { userFetch } from "../../store/actions";
 import { validateFile, validateInputs, validateSubmit } from "../../utils/validations";
+import { convertImageToBase64, requestCameraPermissions, requestReadPermissions, requestWritePermissions } from "../../utils/flie-handling";
+import { setSubmitProfile } from "../../store/actions/firebase.action";
+import { getData } from "../../utils/async-storage";
 
 type Props = {
     navigation: any
@@ -27,7 +21,6 @@ interface ValidationErrors {
 
 const AddProfile = ({ navigation }: Props) => {
     const [step, setStep] = useState<number>(1);
-    const [loading, setLoading] = useState<boolean>(false);
 
     const [errors, setErrors] = useState<ValidationErrors>({});
     const [inputData, setInputData] = useState<any>({
@@ -39,8 +32,6 @@ const AddProfile = ({ navigation }: Props) => {
         file: ''
     });
 
-    const [validator] = useState(new SimpleReactValidator());
-
     const dispatch = useDispatch();
 
     const {
@@ -48,41 +39,12 @@ const AddProfile = ({ navigation }: Props) => {
         userDetailsLoading
     } = useSelector<any, any>(({ auth }) => auth);
 
-    const useForceUpdate = () => {
-        const [value, setValue] = useState(0);
-        return () => setValue(value => value + 1);
-    }
-
-    const forceUpdate = useForceUpdate()
-
-    const getUser = async () => {
-        try {
-            const jsonValue = await AsyncStorage.getItem('user');
-            return jsonValue != null ? JSON.parse(jsonValue) : null;
-        } catch (e) {
-            // error reading value
-        }
-    };
-
-    const convertImageToBase64 = (imageUri: (string | null)) => {
-        return new Promise((resolve, reject) => {
-            RNFetchBlob.fs.readFile(imageUri!, 'base64')
-                .then((data) => {
-                    resolve(data);
-                })
-                .catch((error) => {
-                    reject(error);
-                });
-        });
-    };
+    const {
+        profilePostLoading
+    } = useSelector<any, any>(({ firebase }) => firebase);
 
     useEffect(() => {
         dispatch(userFetch());
-    }, []);
-
-    useEffect(() => {
-        const userStore = getUser();
-        // console.log("userStore", userStore);
     }, []);
 
     useEffect(() => {
@@ -95,8 +57,7 @@ const AddProfile = ({ navigation }: Props) => {
 
     const onPressNext = async () => {
         const validationErrors: any = await validateFile(inputData);
-        console.log("#######################33", validationErrors);
-        
+
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length === 0) {
             setStep(step + 1)
@@ -114,52 +75,24 @@ const AddProfile = ({ navigation }: Props) => {
         }
         let result: ImagePickerResponse;
         try {
-            const cameraGranted = await PermissionsAndroid.request( // Permission for camera
-                PermissionsAndroid.PERMISSIONS.CAMERA,
-                {
-                    title: "App Camera Permission",
-                    message: "App needs access to your camera ",
-                    buttonNeutral: "Ask Me Later",
-                    buttonNegative: "Cancel",
-                    buttonPositive: "OK"
-                }
-            );
-            const readGranted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
-                {
-                    title: 'Gallery Permission',
-                    message: 'App needs access to your gallery.',
-                    buttonPositive: 'OK',
-                }
-            );
-            const writeGranted = await PermissionsAndroid.request(
-                PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-                {
-                    title: 'Gallery Permission',
-                    message: 'App needs access to your gallery.',
-                    buttonPositive: 'OK',
-                }
-            );
-            if (cameraGranted === PermissionsAndroid.RESULTS.GRANTED && readGranted === PermissionsAndroid.RESULTS.GRANTED && writeGranted === PermissionsAndroid.RESULTS.GRANTED) {
+            let cameraGranted = await requestCameraPermissions();
+            let readGranted = await requestReadPermissions();
+            let writeGranted = await requestWritePermissions();
+
+            if (cameraGranted && readGranted && writeGranted) {
                 // console.log("Camera permission given");
                 result = await launchCamera(options);
                 let imageUri: (string | null | undefined) = null;
                 if (result && result.assets && result.assets.length > 0) {
                     imageUri = result.assets[0].uri;
                 }
-                convertImageToBase64(imageUri!)
-                    .then((base64Data) => {
-                        // console.log('Base64 data:', base64Data);
-                        setInputData((prevData: any) => ({
-                            ...prevData,
-                            ['file']: base64Data
-                        }));
-                        setErrors({});
-                    })
-                    .catch((error) => {
-                        // console.error('Error converting image to base64:', error);
-                    });
+                let base64Data = await convertImageToBase64(imageUri!)
 
+                setInputData((prevData: any) => ({
+                    ...prevData,
+                    ['file']: base64Data
+                }));
+                setErrors({});
             } else {
                 // console.log("Camera permission denied");
             }
@@ -170,8 +103,7 @@ const AddProfile = ({ navigation }: Props) => {
     }
 
     const handleFormSubmit = async () => {
-        setLoading(true);
-        const userStore = await getUser();
+        const userStore = await getData();
         const uid = userStore!.uid;
         let errorValidations: ValidationErrors = {
             firstName: 'required',
@@ -184,26 +116,8 @@ const AddProfile = ({ navigation }: Props) => {
         setErrors(validationErrors);
 
         if (Object.keys(validationErrors).length === 0) {
-            try {
-                await database().ref(`users/${uid}/personalinfo`)
-                    .push({
-                        uid: uid,
-                        firstName: inputData.firstName,
-                        lastName: inputData.lastName,
-                        email: inputData.email,
-                        mobile: inputData.mobile,
-                        address: inputData.address,
-                        profilePic: inputData.file
-                    });
-                setLoading(false);
-                navigation.navigate('drawertab');
-
-            } catch (error) {
-                // Handle errors here.
-                setLoading(false);
-            }
+            dispatch(setSubmitProfile(inputData, uid, navigation));
         } else {
-            setLoading(false);
             setErrors(validationErrors);
             // forceUpdate();
         }
@@ -243,7 +157,7 @@ const AddProfile = ({ navigation }: Props) => {
                         leftColor={'#000'}
                         onPress={() => setStep(step - 1)}
                     />}
-                    {!loading ? <Button
+                    {!profilePostLoading ? <Button
                         buttonText={'Next'}
                         rightIcon={'arrow-right'}
                         onPress={step == 1 ? onPressNext : handleFormSubmit}

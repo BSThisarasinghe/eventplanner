@@ -1,8 +1,8 @@
 import authStore from '../reducers/auth.reducer';
 import auth from '@react-native-firebase/auth';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import database from '@react-native-firebase/database';
 import Toast from 'react-native-toast-message';
+import { clearData, storeData } from '../../utils/async-storage';
 
 export const setSignIn = (email: string, password: string, navigation: any): any => {
     return (dispatch: any) => {
@@ -12,7 +12,7 @@ export const setSignIn = (email: string, password: string, navigation: any): any
                 const { currentUser } = auth();
                 // console.log("current User", JSON.stringify(currentUser));
 
-                await AsyncStorage.setItem('user', JSON.stringify(currentUser));
+                storeData(JSON.stringify(currentUser));
                 navigation.navigate('add-profile')
                 dispatch(authStore.actions.loginSuccess(currentUser));
             })
@@ -38,7 +38,8 @@ export const setSignUp = (email: string, password: string, navigation: any): any
                 // console.log("current User", JSON.stringify(currentUser));
                 dispatch(authStore.actions.signUpSuccess());
 
-                await AsyncStorage.setItem('user', JSON.stringify(currentUser));
+                storeData(JSON.stringify(currentUser));
+
                 navigation.navigate('add-profile')
             })
             .catch((error: any) => {
@@ -87,7 +88,7 @@ export const userFetch = (): any => {
 export const logOutUser = (): any => {
     return (dispatch: any) => {
         auth().signOut().then(function () {
-            AsyncStorage.clear();
+            clearData();
         }).catch(function (error) {
             // console.log("Logout error", error);
         });

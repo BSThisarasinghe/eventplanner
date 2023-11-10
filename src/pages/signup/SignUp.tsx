@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
 import { Button, Input, Spinner } from "../../components";
 import SimpleReactValidator from 'simple-react-validator';
-import auth from '@react-native-firebase/auth';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../store/actions";
 import Toast from "react-native-toast-message";

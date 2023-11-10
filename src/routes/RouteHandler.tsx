@@ -8,7 +8,6 @@ import Login from '../pages/login/Login';
 import Home from '../pages/home/Home';
 import { Button, Header } from '../components';
 import SignUp from '../pages/signup/SignUp';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AddProfile from '../pages/profile/AddProfile';
 import EditProfile from '../pages/profile/EditProfile';
 import auth from '@react-native-firebase/auth';
@@ -19,6 +18,7 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { logOutUser, userFetch } from '../store/actions';
 import { PROFILE_AVATAR } from '../../constants.config';
+import { getData, storeData } from '../utils/async-storage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -117,25 +117,6 @@ export default function RouteHandler() {
         dispatch(userFetch());
     }, []);
 
-    const storeData = async (value: any) => {
-        try {
-            const jsonValue = JSON.stringify(value);
-            await AsyncStorage.setItem('user', jsonValue);
-        } catch (e) {
-            // saving error
-        }
-    };
-
-    const getData = async () => {
-        try {
-            const jsonValue = await AsyncStorage.getItem('user');
-            setUser(jsonValue);
-            return jsonValue != null ? JSON.parse(jsonValue) : null;
-        } catch (e) {
-            // error reading value
-        }
-    };
-
     function onAuthStateChanged(user: any) {
         setUser(user);
         storeData(user);
@@ -153,6 +134,7 @@ export default function RouteHandler() {
 
     useEffect(() => {
         let user = getData();
+        setUser(user);
     }, []);
     
     return (

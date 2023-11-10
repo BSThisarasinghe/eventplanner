@@ -3,8 +3,6 @@ import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import SimpleReactValidator from 'simple-react-validator';
 import { Button, Input, Spinner } from "../../components";
-import auth from '@react-native-firebase/auth';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setSignIn } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
