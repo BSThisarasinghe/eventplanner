@@ -34,15 +34,9 @@ const AddProfileDetails = ({
                 <Input
                     label={"First Name"}
                     value={inputData.firstName}
-                    // onChangeText={(value: string) => {
-                    //     validateInputs("First Name", value, 'required');
-                    //     setFirstName(value);
-                    //     forceUpdate();
-                    // }}
                     onChangeText={(value: string) => handleInputChange('firstName', value, 'required')}
                     placeholder={"e.g: name@example.com"}
                     placeholderTextColor={"#d8d8d8"}
-                    // leftIcon={'envelope'}
                     inputStyle={{ marginBottom: 0 }}
                     errorText={errors['firstName']}
                     editable={mode === 'edit'}
@@ -50,72 +44,40 @@ const AddProfileDetails = ({
                 <Input
                     label={"Last Name"}
                     value={inputData.lastName}
-                    // onChangeText={(value: string) => {
-                    //     setLastName(value);
-                    //     forceUpdate();
-                    // }}
                     onChangeText={(value: string) => handleInputChange('lastName', value, 'required')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
-                    // leftIcon={'lock'}
-                    // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    // errorText={validator.message('last name', lastName, 'required')}
                     errorText={errors['lastName']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Email"}
                     value={inputData.email}
-                    // onChangeText={(value: string) => {
-                    //     setEmail(value);
-                    //     forceUpdate();
-                    // }}
                     onChangeText={(value: string) => handleInputChange('email', value, 'required|email')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
-                    // leftIcon={'lock'}
-                    // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    // errorText={validator.message('email', email, 'required|email')}
                     errorText={errors['email']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Phone number"}
                     value={inputData.mobile}
-                    // onChangeText={(value: string) => {
-                    //     setMobile(value)
-                    //     forceUpdate();
-                    // }}
                     onChangeText={(value: string) => handleInputChange('mobile', value, 'required|numeric|max:10')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
-                    // leftIcon={'lock'}
-                    // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    // errorText={validator.message('mobile', mobile, 'required|numeric|max:10')}
                     errorText={errors['mobile']}
                     editable={mode === 'edit'}
                 />
                 <Input
                     label={"Mailing address"}
                     value={inputData.address}
-                    // onChangeText={(value: string) => {
-                    //     setAddress(value)
-                    //     forceUpdate();
-                    // }}
                     onChangeText={(value: string) => handleInputChange('address', value, 'required')}
                     placeholder={"*********"}
                     placeholderTextColor={"#d8d8d8"}
-                    // leftIcon={'lock'}
-                    // rightIcon={showPassword ? 'eye' : 'eye-slash'}
-                    // onPressRightIcon={() => setShowPassword(!showPassword)}
                     inputStyle={{ marginBottom: 0 }}
-                    // errorText={validator.message('address', address, 'required')}
                     errorText={errors['address']}
                     editable={mode === 'edit'}
                 />

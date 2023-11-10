@@ -5,6 +5,11 @@ import SimpleReactValidator from 'simple-react-validator';
 import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../store/actions";
 import Toast from "react-native-toast-message";
+import { validateInputs, validateSubmit } from "../../utils/validations";
+
+interface ValidationErrors {
+    [key: string]: string;
+}
 
 type Props = {
     navigation: any
@@ -19,6 +24,7 @@ const SignUp = ({ navigation }: Props) => {
     const [pwdError, setPwdError] = useState<string>('');
 
     const [validator] = useState(new SimpleReactValidator());
+    const [errors, setErrors] = useState<ValidationErrors>({});
 
     const {
         signUpLoading
@@ -26,34 +32,46 @@ const SignUp = ({ navigation }: Props) => {
 
     const dispatch = useDispatch();
 
-    const useForceUpdate = () => {
-        const [value, setValue] = useState(0);
-        return () => setValue(value => value + 1);
-    }
-
-    const forceUpdate = useForceUpdate()
-
-    // const [auth, setAuth] = useState<any>(FIREBASE_AUTH);
-
     const handleLogin = () => {
         navigation.navigate('login')
     };
 
     const onSignUp = async () => {
         try {
-            if (validator.allValid()) {
+            let req = {
+                email: email,
+                password: password
+            }
+            let errorValidations: ValidationErrors = {
+                email: 'required|email',
+                password: 'required'
+            }
+            const validationErrors: any = await validateSubmit(req, errorValidations);
+            setErrors(validationErrors);
+            if (Object.keys(validationErrors).length === 0) {
                 if (password == cnfPassword) { // Chech whether passwords match
                     dispatch(setSignUp(email, password, navigation))
                 } else {
                     setPwdError('Passwords do not match')
                 }
             } else {
-                validator.showMessages();
-                forceUpdate()
+                setErrors(validationErrors);
             }
         } catch (error) {
             // console.log("reposne 1 error", error);
         }
+    }
+
+    const handleInputChange = (value: string, fieldName: string, rules: string) => {
+        if (fieldName == 'email') {
+            setEmail(value);
+        } else if (fieldName == 'password') {
+            setPassword(value);
+        } else {
+            setCnfPassword(value);
+        }
+        const validationErrors = validateInputs(fieldName, value, rules);
+        setErrors(validationErrors);
     }
 
     return (
@@ -67,38 +85,38 @@ const SignUp = ({ navigation }: Props) => {
             <Input
                 label={"Email"}
                 value={email}
-                onChangeText={(value: string) => setEmail(value)}
+                onChangeText={(value: string) => handleInputChange(value, 'email', 'required|email')}
                 placeholder={"e.g: name@example.com"}
                 placeholderTextColor={"#d8d8d8"}
                 leftIcon={'envelope'}
                 inputStyle={{ marginBottom: 0 }}
-                errorText={validator.message('email', email, 'required|email')}
+                errorText={errors['email']}
             />
             <Input
                 label={"Password"}
                 value={password}
                 secureTextEntry={!showPassword}
-                onChangeText={(value: string) => setPassword(value)}
+                onChangeText={(value: string) => handleInputChange(value, 'password', 'required')}
                 placeholder={"*********"}
                 placeholderTextColor={"#d8d8d8"}
                 leftIcon={'lock'}
                 rightIcon={showPassword ? 'eye' : 'eye-slash'}
                 onPressRightIcon={() => setShowPassword(!showPassword)}
                 inputStyle={{ marginBottom: 0 }}
-                errorText={validator.message('password', password, 'required')}
+                errorText={errors['password']}
             />
             <Input
                 label={"Confirm Password"}
                 value={cnfPassword}
                 secureTextEntry={!showCnfPassword}
-                onChangeText={(value: string) => setCnfPassword(value)}
+                onChangeText={(value: string) => handleInputChange(value, 'confirmPwd', 'required')}
                 placeholder={"*********"}
                 placeholderTextColor={"#d8d8d8"}
                 leftIcon={'lock'}
                 rightIcon={showCnfPassword ? 'eye' : 'eye-slash'}
                 onPressRightIcon={() => setShowCnfPassword(!showCnfPassword)}
                 inputStyle={{ marginBottom: 50 }}
-                errorText={pwdError === '' ? validator.message('confirm password', password, 'required') : pwdError}
+                errorText={pwdError === '' ? errors['confirmPwd'] : pwdError}
             />
             {/* </View> */}
             {!signUpLoading ? <Button

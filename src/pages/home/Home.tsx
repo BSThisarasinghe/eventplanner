@@ -10,7 +10,6 @@ import { ImageItem } from './components/ImageItem';
 import { Button } from '../../components';
 
 export default function Home({ navigation }: any) {
-    const [tab, setTab] = useState(0);
     const [imageList, setImageList] = useState<string[]>([]);
 
     const dispatch = useDispatch();
@@ -20,11 +19,6 @@ export default function Home({ navigation }: any) {
         users,
         posts
     } = useSelector<any, any>(({ event }) => event);
-
-    const {
-        userDetails,
-        userDetailsLoading
-    } = useSelector<any, any>(({ auth }) => auth);
 
     useEffect(() => {
         dispatch(userFetch());

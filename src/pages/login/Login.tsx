@@ -6,6 +6,11 @@ import { Button, Input, Spinner } from "../../components";
 import { setSignIn } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
+import { validateInputs, validateSubmit } from "../../utils/validations";
+
+interface ValidationErrors {
+    [key: string]: string;
+}
 
 type Props = {
     navigation: any
@@ -14,22 +19,16 @@ type Props = {
 const Login = ({ navigation }: Props) => {
 
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [errors, setErrors] = useState<ValidationErrors>({});
+
     const [email, setEmail] = useState<string>('');
 
     const [password, setPassword] = useState<string>('');
-    const [validator] = useState(new SimpleReactValidator())
     const dispatch = useDispatch();
 
     const {
         loginLoading
     } = useSelector<any, any>(({ auth }) => auth);
-
-    const useForceUpdate = () => {
-        const [value, setValue] = useState(0);
-        return () => setValue(value => value + 1);
-    }
-
-    const forceUpdate = useForceUpdate()
 
     const handleSignUp = () => {
         navigation.navigate('signup')
@@ -37,13 +36,16 @@ const Login = ({ navigation }: Props) => {
 
     const onLogin = async () => {
         try {
-            // const response = await signInWithEmailAndPassword(auth, email, password);
-            // console.log("response 3333333332");
-            if (validator.allValid()) {
+            let errorValidations: ValidationErrors = {
+                email: 'required|email',
+                password: 'required'
+            }
+            const validationErrors: any = await validateSubmit({ email, password }, errorValidations);
+            setErrors(validationErrors);
+            if (Object.keys(validationErrors).length === 0) {
                 dispatch(setSignIn(email, password, navigation))
             } else {
-                validator.showMessages();
-                forceUpdate()
+                setErrors(validationErrors);
             }
         } catch (error) {
             Toast.show({
@@ -51,8 +53,17 @@ const Login = ({ navigation }: Props) => {
                 text1: 'Error',
                 text2: 'Something went wrong!'
             });
-            // console.log("reposne 2 error", error);
         }
+    }
+
+    const handleInputChange = (value: string, fieldName: string, rules: string) => {
+        if (fieldName == 'email') {
+            setEmail(value);
+        } else {
+            setPassword(value);
+        }
+        const validationErrors = validateInputs(fieldName, value, rules);
+        setErrors(validationErrors);
     }
 
     return (
@@ -66,31 +77,25 @@ const Login = ({ navigation }: Props) => {
             <Input
                 label={"Email"}
                 value={email}
-                onChangeText={(value: string) => {
-                    forceUpdate();
-                    setEmail(value)
-                }}
+                onChangeText={(value: string) => handleInputChange(value, 'email', 'required|email')}
                 placeholder={"e.g: name@example.com"}
                 placeholderTextColor={"#d8d8d8"}
                 leftIcon={'envelope'}
                 inputStyle={{ marginBottom: 0 }}
-                errorText={validator.message('email', email, 'required|email')}
+                errorText={errors['email']}
             />
             <Input
                 label={"Password"}
                 value={password}
                 secureTextEntry={!showPassword}
-                onChangeText={(value: string) => {
-                    forceUpdate()
-                    setPassword(value)
-                }}
+                onChangeText={(value: string) => handleInputChange(value, 'password', 'required')}
                 placeholder={"*********"}
                 placeholderTextColor={"#d8d8d8"}
                 leftIcon={'lock'}
                 rightIcon={showPassword ? 'eye' : 'eye-slash'}
                 onPressRightIcon={() => setShowPassword(!showPassword)}
                 inputStyle={{ marginBottom: 50 }}
-                errorText={validator.message('password', password, 'required')}
+                errorText={errors['password']}
             />
             <View style={{ justifyContent: 'flex-end', alignItems: 'flex-end' }}>
                 <Button
