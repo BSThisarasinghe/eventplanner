@@ -12,6 +12,7 @@ import Toast from "react-native-toast-message";
 import { validateInputs, validateSubmit } from "../../utils/validations";
 import { convertImageToBase64, requestCameraPermissions, requestReadPermissions, requestWritePermissions } from "../../utils/flie-handling";
 import { getData } from "../../utils/async-storage";
+import { setError } from "../../store/actions/error.action";
 
 interface ValidationErrors {
     [key: string]: string;
@@ -72,7 +73,7 @@ const EditProfile = () => {
                     // console.log("Camera permission denied");
                 }
             } catch (err) {
-                // console.log("err", err);
+                dispatch(setError(err));
             }
         }
     }

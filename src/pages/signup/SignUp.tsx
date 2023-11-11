@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setSignUp } from "../../store/actions";
 import Toast from "react-native-toast-message";
 import { validateInputs, validateSubmit } from "../../utils/validations";
+import { setError } from "../../store/actions/error.action";
 
 interface ValidationErrors {
     [key: string]: string;
@@ -58,7 +59,7 @@ const SignUp = ({ navigation }: Props) => {
                 setErrors(validationErrors);
             }
         } catch (error) {
-            // console.log("reposne 1 error", error);
+            dispatch(setError(error));
         }
     }
 

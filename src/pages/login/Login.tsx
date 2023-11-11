@@ -7,6 +7,7 @@ import { setSignIn } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { validateInputs, validateSubmit } from "../../utils/validations";
+import { setError } from "../../store/actions/error.action";
 
 interface ValidationErrors {
     [key: string]: string;
@@ -53,6 +54,7 @@ const Login = ({ navigation }: Props) => {
                 text1: 'Error',
                 text2: 'Something went wrong!'
             });
+            dispatch(setError(error));
         }
     }
 

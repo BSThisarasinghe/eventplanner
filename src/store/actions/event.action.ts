@@ -18,8 +18,6 @@ export const fetchUsers = (): any => {
     return (dispatch: any) => {
         getUsers()
             .then((response: any) => {
-                // console.log("EEEEEEEEEEe", JSON.stringify(response.data));
-                
                 dispatch(orderStore.actions.userFetchSuccess(response.data));
             })
             .catch((error: any) => {

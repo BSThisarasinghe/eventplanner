@@ -10,6 +10,7 @@ import { validateFile, validateInputs, validateSubmit } from "../../utils/valida
 import { convertImageToBase64, requestCameraPermissions, requestReadPermissions, requestWritePermissions } from "../../utils/flie-handling";
 import { setSubmitProfile } from "../../store/actions/firebase.action";
 import { getData } from "../../utils/async-storage";
+import { setError } from "../../store/actions/error.action";
 
 type Props = {
     navigation: any
@@ -97,7 +98,7 @@ const AddProfile = ({ navigation }: Props) => {
                 // console.log("Camera permission denied");
             }
         } catch (err) {
-            // console.log("err", err);
+            dispatch(setError(err));
         }
 
     }
