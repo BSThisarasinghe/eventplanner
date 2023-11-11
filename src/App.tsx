@@ -65,7 +65,7 @@ function App(): JSX.Element {
 
       if (permissionGranted) {
         messaging().getToken().then(token => {
-          console.log(token);
+          // console.log(token);
         });
       } else {
         // console.log("Failed");
