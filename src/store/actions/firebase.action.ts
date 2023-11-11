@@ -3,6 +3,8 @@ import Toast from 'react-native-toast-message';
 import { postProfile, putProfile } from '../../services/firebase.service';
 
 export const setSubmitProfile = (inputData: any, uid: string, navigation: any): any => {
+    console.log("############", inputData, uid);
+    
     return (dispatch: any) => {
         dispatch(firebaseStore.actions.profilePostLoading());
         postProfile(inputData, uid)

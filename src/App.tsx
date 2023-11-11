@@ -14,7 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { Provider } from 'react-redux';
 import store from './store';
 import { User, onAuthStateChanged } from 'firebase/auth';
-import auth from '@react-native-firebase/auth';
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import messaging from '@react-native-firebase/messaging';
 import { storeData } from './utils/async-storage';
 // import { FIREBASE_AUTH } from './firebase/firebase-config';
@@ -24,7 +24,7 @@ type SectionProps = PropsWithChildren<{
 }>;
 
 function App(): JSX.Element {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null | null>(null)
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -32,7 +32,8 @@ function App(): JSX.Element {
   };
 
 
-  function onAuthStateChanged(user: any) {
+  function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
+    
     setUser(user);
     storeData(user);
   }

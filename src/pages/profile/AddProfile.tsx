@@ -102,7 +102,9 @@ const AddProfile = ({ navigation }: Props) => {
 
     const handleFormSubmit = async () => {
         const userStore = await getData();
-        const uid = userStore!.uid;
+        
+        const uid = typeof userStore == 'string' ? JSON.parse(userStore).uid : userStore!.uid;
+
         let errorValidations: ValidationErrors = {
             firstName: 'required',
             lastName: 'required',
@@ -146,11 +148,11 @@ const AddProfile = ({ navigation }: Props) => {
                     scrollEnable={true}
                     mode={'edit'}
                 />}
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+                <View style={styles.btnWrapper}>
                     {step == 2 && <Button
                         buttonText={'Back'}
                         leftIcon={'arrow-left'}
-                        buttonStyle={{ backgroundColor: '#f1e6e3', marginRight: 10 }}
+                        buttonStyle={styles.buttonStyle}
                         buttonTextStyle={{ color: '#000' }}
                         leftColor={'#000'}
                         onPress={() => setStep(step - 1)}
@@ -215,7 +217,9 @@ const styles = StyleSheet.create({
     },
     facebookButton: { backgroundColor: '#4c69ba', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
     googleButton: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#d8d8d8', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
-    appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 }
+    appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 },
+    btnWrapper: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
+    buttonStyle: { backgroundColor: '#f1e6e3', marginRight: 10 }
 });
 
 export default AddProfile;

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DrawerNavigationProp, createDrawerNavigator } from '@react-navigation/drawer';
 import SplashScreen from 'react-native-splash-screen';
 import Login from '../pages/login/Login';
 import Home from '../pages/home/Home';
@@ -23,6 +23,22 @@ import { getData, storeData } from '../utils/async-storage';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+
+type DrawerNavigationProps = DrawerNavigationProp<RootStackParamList, 'drawertab'>;
+type BottomTabNavigationProps = BottomTabNavigationProp<RootTabParamList, 'drawer'>;
+type RootStackParamList = {
+  splash: undefined;
+  drawertab: undefined;
+  addprofile: undefined;
+  postlist: undefined;
+  login: undefined;
+  signup: undefined;
+};
+type RootTabParamList = {
+  drawer: undefined;
+  editprofile: undefined;
+};
+
 
 function DrawerContent({ navigation }: any) {
     const [email, setEmail] = useState<string>('');
@@ -140,11 +156,6 @@ export default function RouteHandler() {
     return (
         <Stack.Navigator
             initialRouteName="splash"
-            // screenOptions={({ navigation }) => ({
-            //     header: () => {
-            //         return <Header navigation={navigation} />;
-            //     },
-            // })}
         >
             {(user != 'null' && user !== null) ? <>
                  <Stack.Screen name="drawertab" component={DrawerTab} options={{ headerShown: false }}  />

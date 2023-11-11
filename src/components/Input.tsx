@@ -2,6 +2,35 @@ import React from 'react';
 import { View, TextInput, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+type Props = {
+    label?: string;
+    value?: string;
+    onChangeText?: (value: string) => void;
+    secureTextEntry?: boolean;
+    placeholder?: string;
+    placeholderTextColor?: string;
+    labelStyle?: object;
+    style?: object;
+    returnKeyType?: string;
+    blurOnSubmit?: (e: any) => void;
+    onSubmitEditing?: (nativeEvent: any) => void;
+    ref?: string;
+    multiline?: boolean;
+    numberOfLines?: number;
+    maxLength?: number;
+    inputStyle?: object;
+    labelIcon?: object;
+    editable?: boolean;
+    keyboardType?: string;
+    errorText?: string;
+    onBlur?: (e: any) => void;
+    onPressIcon?: () => void;
+    leftIcon?: string;
+    rightIcon?: string;
+    key?: string;
+    onPressRightIcon?: string;
+}
+
 const Input = ({
     label,
     value,

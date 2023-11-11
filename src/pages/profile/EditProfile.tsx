@@ -139,8 +139,8 @@ const EditProfile = () => {
                     <Button
                         buttonText={''}
                         rightIcon={mode == 'edit' ? 'camera' : ''}
-                        buttonStyle={{ backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' }}
-                        imageStyle={{ width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}
+                        buttonStyle={styles.buttonStyle}
+                        imageStyle={styles.buttonImageStyle}
                         rightColor={'#da5e42'}
                         onPress={onPressUpload}
                         backgroundImage={{ uri: 'data:image/png;base64,' + inputData.file }}
@@ -217,7 +217,9 @@ const styles = StyleSheet.create({
     },
     facebookButton: { backgroundColor: '#4c69ba', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
     googleButton: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#d8d8d8', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 10 },
-    appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 }
+    appleButton: { backgroundColor: '#000', flexDirection: 'row', padding: 5, borderRadius: 5, justifyContent: 'space-around', alignItems: 'center', width: 250, marginBottom: 30 },
+    buttonStyle: { backgroundColor: '#f1e6e3', width: 150, height: 150, borderRadius: 100, overflow: 'hidden', justifyContent: 'center', alignItems: 'center' },
+    buttonImageStyle: { width: 150, height: 150, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }
 });
 
 export default EditProfile;

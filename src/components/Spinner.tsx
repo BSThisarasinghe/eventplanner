@@ -4,7 +4,13 @@ import {
     UIActivityIndicator
 } from 'react-native-indicators';
 
-const Spinner = ({ size, spinnerStyle, color }: any) => {
+type Props = {
+    size?: number,
+    spinnerStyle?: object,
+    color?: string
+}
+
+const Spinner = ({ size, spinnerStyle, color }: Props) => {
     return(
         <View style={[styles.spinnerStyle, spinnerStyle]}>
             <UIActivityIndicator size={size || 40} color={color || "#da5e42"} />
