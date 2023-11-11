@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Button, Input } from "../../../components";
-
-interface ValidationErrors {
-    [key: string]: string;
-}
-
+import { ValidationErrors } from "../../../models/response/validation-erros.model";
 
 type Props = {
     scrollEnable: boolean;

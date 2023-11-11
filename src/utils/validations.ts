@@ -1,11 +1,8 @@
 import SimpleReactValidator from 'simple-react-validator';
+import { ValidationErrors } from '../models/response/validation-erros.model';
 
 // Create a validator instance
 const validator = new SimpleReactValidator();
-
-interface ValidationErrors {
-    [key: string]: string;
-}
 
 const validateInputs = (key: string, value: string, rules: string): ValidationErrors => {
 

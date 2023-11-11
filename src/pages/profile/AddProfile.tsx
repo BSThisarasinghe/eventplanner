@@ -11,13 +11,10 @@ import { convertImageToBase64, requestCameraPermissions, requestReadPermissions,
 import { setSubmitProfile } from "../../store/actions/firebase.action";
 import { getData } from "../../utils/async-storage";
 import { setError } from "../../store/actions/error.action";
+import { ValidationErrors } from "../../models/response/validation-erros.model";
 
 type Props = {
     navigation: any
-}
-
-interface ValidationErrors {
-    [key: string]: string;
 }
 
 const AddProfile = ({ navigation }: Props) => {

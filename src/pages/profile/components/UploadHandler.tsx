@@ -3,10 +3,7 @@ import { PermissionsAndroid, StyleSheet, Text, TextInput, TouchableOpacity, View
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Feather';
 import { Button } from "../../../components";
-
-interface ValidationErrors {
-  [key: string]: string;
-}
+import { ValidationErrors } from "../../../models/response/validation-erros.model";
 
 type Props = {
   onPressUpload: () => void,

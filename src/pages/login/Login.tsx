@@ -8,10 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Toast from "react-native-toast-message";
 import { validateInputs, validateSubmit } from "../../utils/validations";
 import { setError } from "../../store/actions/error.action";
-
-interface ValidationErrors {
-    [key: string]: string;
-}
+import { ValidationErrors } from "../../models/response/validation-erros.model";
 
 type Props = {
     navigation: any
