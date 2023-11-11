@@ -26,6 +26,9 @@ export const setSubmitProfile = (inputData: any, uid: string, navigation: any): 
 };
 
 export const updateProfile = (inputData: any, uid: string, uniqueKey: string, setMode: (mode: string) => void): any => {
+    const { file, ...processedData } = inputData;
+    // console.log("@@@@@@@@@2", JSON.stringify(processedData), uid, uniqueKey);
+    
     return (dispatch: any) => {
         dispatch(firebaseStore.actions.profilePostLoading());
         putProfile(inputData, uid, uniqueKey)
@@ -34,6 +37,8 @@ export const updateProfile = (inputData: any, uid: string, uniqueKey: string, se
                 dispatch(firebaseStore.actions.profilePostSuccess(res));
             })
             .catch((error: any) => {
+                // console.log("########## error", error);
+                
                 Toast.show({
                     type: 'error',
                     text1: 'Error',

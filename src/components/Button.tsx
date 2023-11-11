@@ -14,11 +14,12 @@ type Props = {
     leftIcon?: string;
     backgroundImage?: any;
     imageStyle?: object;
+    testId?: string;
 }
 
-const Button = ({ navigation, buttonStyle, buttonTextStyle, buttonText, rightIcon, onPress, rightColor, leftColor, leftIcon, backgroundImage, imageStyle }: Props) => {
+const Button = ({ navigation, buttonStyle, buttonTextStyle, buttonText, rightIcon, onPress, rightColor, leftColor, leftIcon, backgroundImage, imageStyle, testId }: Props) => {
     return (
-        <TouchableOpacity onPress={onPress} style={[styles.button, buttonStyle]}>
+        <TouchableOpacity onPress={onPress} style={[styles.button, buttonStyle]} testID={testId}>
             <ImageBackground source={backgroundImage} style={[{ flexDirection: 'row' }, imageStyle]}>
                 {leftIcon && <Icon name={leftIcon} size={20} color={leftColor || "#fff"} />}
                 {buttonText && <Text style={[styles.buttonText, buttonTextStyle]}>{buttonText}</Text>}

@@ -1,7 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, TextInput, ScrollView, View } from "react-native";
-import Icon from 'react-native-vector-icons/FontAwesome';
-import SimpleReactValidator from 'simple-react-validator';
+import { StyleSheet, Text, ScrollView, View } from "react-native";
 import { Button, Input, Spinner } from "../../components";
 import { setSignIn } from "../../store/actions";
 import { useDispatch, useSelector } from "react-redux";
@@ -110,11 +108,13 @@ const Login = ({ navigation }: Props) => {
                 buttonText={'Login'}
                 rightIcon={'arrow-right'}
                 onPress={onLogin}
+                testId={"loginButton"}
             /> : <Spinner />}
             <Button
                 buttonText={'Sign Up'}
                 rightIcon={'arrow-right'}
                 onPress={handleSignUp}
+                testId={"registerButton"}
             />
 
         </ScrollView>
